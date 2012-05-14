@@ -1,0 +1,8 @@
+#ignorar arquivos temporarios
+*~
+
+#ignorar arquivos de projeto do eclipse e do netbeans
+nbproject/*
+.buildpath
+.project
+.settings
