@@ -7,7 +7,7 @@ namespace Bloum;
  * @author Magno Leal <magnoleal89@gmail.com>
  * @version 1.0 - 11 de Maio de 2012
  **/
-class Fx_Log
+class Log
 {
     /**
     * Tipos de Log
@@ -53,11 +53,11 @@ class Fx_Log
 
         if(!file_exists($this->dir)){
             if( !mkdir($this->dir, $this->permissionFile, true) )
-                throw new Fx_LoggerException("Erro Ao Criar Arquivo de Log!");
+                throw new LoggerException("Erro Ao Criar Arquivo de Log!");
         }
 
         if (file_exists($this->file) && !is_writable($this->file))
-            throw new Fx_LoggerException("Arquivo De Log Nao Pode Ser Escrito, Verifique Suas Permissoes!");
+            throw new LoggerException("Arquivo De Log Nao Pode Ser Escrito, Verifique Suas Permissoes!");
 
 
         $this->openFile();
@@ -123,7 +123,7 @@ class Fx_Log
         if ( !isset($this->fileHandle) || $this->fileHandle == false ){
             $this->fileHandle = fopen($this->file, $mode);
             if (!$this->fileHandle) 
-                throw new Fx_LoggerException("Erro Ao Abrir O Arquivo de Log!");           
+                throw new LoggerException("Erro Ao Abrir O Arquivo de Log!");           
             
         } 
         
@@ -133,7 +133,7 @@ class Fx_Log
     { 
         if ($this->fileHandle){
             if(fclose($this->fileHandle) == false) 
-                throw new Fx_LoggerException("Erro Ao Fechar O Arquivo de Log!");
+                throw new LoggerException("Erro Ao Fechar O Arquivo de Log!");
 
             $this->fileHandle = null;            
         }
@@ -166,7 +166,7 @@ class Fx_Log
             rewind($this->fileHandle); //coloca o ponteiro no inicio do arquivo
 
             if (fwrite($this->fileHandle, $line) === false)
-                throw new Fx_LoggerException("Erro Ao Escrever Log!");
+                throw new LoggerException("Erro Ao Escrever Log!");
 
         }
 

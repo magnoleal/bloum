@@ -18,20 +18,14 @@ class Url {
  
   function __construct($url = null) {
 
-    if ($url == null) {
-      $this->url = $_SERVER['PHP_SELF'];
-      $paramGet = explode($this->url, $_SERVER ['REQUEST_URI']);
-      if (count($paramGet) > 1)
-        $this->url .= $paramGet[1];
-    }else {
-      $this->url = $url;
-    }
+    $this->url = isset($url) ? $url : $_SERVER['PHP_SELF'];
 
+    $this->url = substr($this->url, stripos($this->url, Config::ROOT_SCRIPT) + strlen(Config::ROOT_SCRIPT));      
 
-
-    $this->url = substr($this->url, stripos($this->url, Config::ROOT_SCRIPT . "/") + strlen(Config::ROOT_SCRIPT . "/"));
-
-    echo $this->url;
+    if(strlen($this->url) <= 0)
+      $this->url = "index.index";
+    elseif($this->url[0] = '/')
+      $this->url = substr($this->url, 1);
 
     $this->explode();
   }
@@ -58,22 +52,27 @@ class Url {
    * 
    */
   private function explode() {
+
     $arrayUrl = explode(Config::SEP_URL, $this->url);
 
-    $count = count($arrayUrl);
-
-    if ($count != 2)
-      throw new BabUrlException("Bad Url Format!");
-
-    $ind = 0;
+    if(count($arrayUrl) > 2)
+      throw new BadUrlException("Bad Format Url!");
+      
     $this->controller = $arrayUrl[0];
+    $this->controller = Util::captalize($this->controller);
+    
+    if(count($arrayUrl) == 1){
 
-    //Quebrando caso existam parametros
-    $arrayUrl = explode("?", $arrayUrl[$ind]);
+      $this->action = 'index';
 
-    $this->action = $arrayUrl[0];
+    }else{
+      
+      //Quebrando caso existam parametros
+      $arrayUrl = explode("?", $arrayUrl[1]);
+      $this->action = $arrayUrl[0];
+
+    }
+
   }
 
 }
-
-?>
