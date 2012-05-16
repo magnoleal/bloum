@@ -46,10 +46,6 @@ class Main {
     
     $session->setUrls($this->url->getUrl());
 
-    print_r($_SESSION);
-
-
-
 
     if (!$isAjax)            
       $isAjax = Util::isRequestAjax();                                

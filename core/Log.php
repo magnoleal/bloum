@@ -1,6 +1,8 @@
 <?php
 namespace Bloum;
 
+if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
+
 /**
  * Classe Para Gerenciamento de Log<br />
  * 

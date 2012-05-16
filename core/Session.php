@@ -1,6 +1,8 @@
 <?php
 namespace Bloum;
 
+if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
+
 class Session {
 
   const KEY = "bloum";

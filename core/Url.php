@@ -2,6 +2,8 @@
 
 namespace Bloum;
 
+if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
+
 /**
  * Classe Para Manipulação de URL<br />
  * 
@@ -53,7 +55,19 @@ class Url {
    */
   private function explode() {
 
-    $arrayUrl = explode(Config::SEP_URL, $this->url);
+    $link = $this->url;
+
+    if (file_exists(DIR_APP.'config/Routes.php')){      
+      
+      $routes = new \Config\Routes();
+      $route = $routes->get($link);
+
+      if($route != null)
+        $link = $route;
+
+    }
+
+    $arrayUrl = explode(Config::SEP_URL, $link);
 
     if(count($arrayUrl) > 2)
       throw new BadUrlException("Bad Format Url!");

@@ -1,6 +1,8 @@
 <?php
 namespace Bloum;
 
+if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
+
 class Util {
   public static function isRequestAjax() {
     return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strcmp(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'xmlhttprequest') == 0);

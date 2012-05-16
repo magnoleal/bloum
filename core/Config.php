@@ -2,6 +2,8 @@
 
 namespace Bloum;
 
+if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
+
 /**
  * Classe Para Configurações gerais do CORE<br />
  * 

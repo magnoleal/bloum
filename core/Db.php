@@ -2,6 +2,8 @@
 
 namespace Bloum;
 
+if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
+
 class Db {
 
   private static $db = null;
