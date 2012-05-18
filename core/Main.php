@@ -12,7 +12,7 @@ class Main {
 
   function __construct() {
     
-    $this->url = new Url();
+    $this->url = Url::getInstance();
 
     @session_start();
 
@@ -39,11 +39,15 @@ class Main {
       $this->setSessionFromFlash();
     }
 
-    #if ( !file_exists(DIR_APP . "controllers/" . $this->url->getController() . ".php") )
-     # throw new NotFoundException('Controller ' . $this->url->getController() . ' Not Found!');
+    $controllerName = ucfirst($this->url->getController())."Controller";
 
-    $session = Session::getInstance();
+    if ( !file_exists(DIR_APP . "controllers/" .  $controllerName . ".php") )
+      throw new NotFoundException('Controller ' .  $controllerName . ' Not Found!');
+
+    $controller = new $controllerName();    
+    $controller->execute($this->url->getAction());
     
+    $session = Session::getInstance();    
     $session->setUrls($this->url->getUrl());
 
 
@@ -53,5 +57,3 @@ class Main {
   }
 
 }
-
-?>

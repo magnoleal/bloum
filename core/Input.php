@@ -11,37 +11,55 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
  */
 class Input
 {
-    private $params;
-    private static $instance = null;
+  private $params;
+  private static $instance = null;
 
-    private function __construct()
-    {
-        if($this->params == null)
-            $this->params = array();
-        $this->extract();
-    }
+  private function __construct()
+  {
+    if($this->params == null)
+      $this->params = array();
+    $this->extract();
+  }
 
-    public static function getInstance()
-    {
-        if(Input::$instance == null)
-            Input::$instance = new Input();
-        return Input::$instance;
-    }
+  public static function getInstance()
+  {
+    if(Input::$instance == null)
+      Input::$instance = new Input();
+    return Input::$instance;
+  }
 
-    public function getParams(){
-        return $this->params;
-    }
+  public function getParams(){
+    return $this->params;
+  }
 
-    private function extract(){            
-        $this->extractFromArray($_REQUEST);                    
-    }
+  private function extract(){            
+    $this->extractFromArray($_REQUEST);                    
+  }
 
-    private function extractFromArray($array)
-    {
-        $keys = array_keys($array);
+  private function extractFromArray($array)
+  {
+    $keys = array_keys($array);
 
-        for ($i = 0; $i < count($keys); $i++)
-            $this->params[addslashes(trim($keys[$i]))] = addslashes(trim($array[$keys[$i]]));
-    }  
+    for ($i = 0; $i < count($keys); $i++)
+      $this->params[addslashes(trim($keys[$i]))] = addslashes(trim($array[$keys[$i]]));
+  }  
+
+  /**
+   * Pega um Valor (objeto ou nao) da Sessão
+   * @param String $chave - identificação do valor
+   * @return Mixed Valor da Sesssao
+   */
+  public function getValue($key){
+    return isset ($this->params[$key]) ? $this->params[$key] : null;
+  }
+
+  /**
+   * Pega um Valor (objeto ou nao) da Sessão
+   * @param String $chave - identificação do valor
+   * @return Mixed Valor da Sesssao
+   */
+  public function exist($key){
+    return isset ($this->params[$key]);
+  }
 
 }

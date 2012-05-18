@@ -17,6 +17,8 @@ class Url {
   private $url;
   private $controller;
   private $action;
+
+  private static $instance = null;
  
   function __construct($url = null) {
 
@@ -31,6 +33,14 @@ class Url {
 
     $this->explode();
   }
+
+  public static function getInstance()
+  {
+    if(Url::$instance == null)
+      Url::$instance = new Url();
+    return Url::$instance;
+  }
+
 
   public function getController() {
     return $this->controller;
@@ -57,9 +67,9 @@ class Url {
 
     $link = $this->url;
 
-    if (file_exists(DIR_APP.'config/Routes.php')){      
+    if (file_exists(DIR_APP.'config/RoutesConfig.php')){      
       
-      $routes = new \Config\Routes();
+      $routes = new \RoutesConfig();
       $route = $routes->get($link);
 
       if($route != null)
@@ -73,9 +83,8 @@ class Url {
       throw new BadUrlException("Bad Format Url!");
       
     $this->controller = $arrayUrl[0];
-    $this->controller = Util::captalize($this->controller);
     
-    if(count($arrayUrl) == 1){
+    if(count($arrayUrl) == 1 || strlen($arrayUrl[1]) < 1){
 
       $this->action = 'index';
 

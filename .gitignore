@@ -6,3 +6,6 @@ nbproject/*
 .buildpath
 .project
 .settings
+
+#ignorar templates compilados
+lib/smarty/templates_c
