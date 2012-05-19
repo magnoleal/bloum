@@ -35,4 +35,9 @@ class Config{
     * Constante que define o script que o .htaccess redireciona
     **/  
     const ROOT_SCRIPT = 'index.php';
+
+    /**
+    * Constante que define a separacao na url dos parametros, Ex.: controller.action?param1=43    
+    **/  
+    const SEP_ACTION_FILTERS = '|';
 }

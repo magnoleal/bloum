@@ -17,8 +17,8 @@ class Controller
   protected $output;
   protected $session;
 
-  protected $beforeFilter;
-  protected $afterFilter;
+  static protected $beforeFilter = array();
+  static protected $afterFilter = array();
 
   function __construct() {
     
@@ -53,13 +53,49 @@ class Controller
 
   public function execute($action){
     if ( !method_exists($this, $action) ) 
-       throw new NotFoundException('Action ' . $action . ' Not Found in Controller ' . $this->url->getController() . '!');
+      throw new NotFoundException('Action ' . $action . ' Not Found in Controller ' . $this->url->getController() . '!');
+
+    
+    $this->executeFilter(static::$beforeFilter, $action);
 
     $refMetodo = new \ReflectionMethod($this, $action);
     $metParametros = $refMetodo->getParameters();
 
+    //ainda falta a questao dos parametros
     $rs = $refMetodo->invokeArgs($this, array());
 
+    $this->executeFilter(static::$afterFilter, $action);
+
+    $this->output->show();
+
+  }
+
+  public function executeFilter($arrayFilter, $action){
+    $filters = array_keys($arrayFilter);
+
+    foreach ($filters as $filter) {
+
+      $filterParams = $arrayFilter[$filter];
+
+      if ( !method_exists($this, $filter) ) 
+        throw new NotFoundException('Filter ' . $filter . ' Not Found in Controller ' . $this->url->getController() . '!');
+      
+      $skip = isset($filterParams['skip']) ? $filterParams['skip'] : '';
+      $skip = explode(Config::SEP_ACTION_FILTERS, $skip);
+
+      if( array_search($action, $skip) !== FALSE )
+        continue;
+
+      $only = isset($filterParams['only']) ? $filterParams['only'] : '';
+      $only = explode(Config::SEP_ACTION_FILTERS, $only);
+
+      if( strlen($only[0]) > 0 && $only[0] != 'all' && array_search($action, $only) === FALSE )
+        continue;
+
+      $refFilter = new \ReflectionMethod($this, $filter);
+      $refFilter->invokeArgs($this, array());
+      
+    }
   }
 
   /**

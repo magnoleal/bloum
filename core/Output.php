@@ -15,6 +15,7 @@ class Output extends \Smarty
 {
   private $callShow = false;
   private static $instance = null; 
+  private $view;
 
   function __construct() {
     parent::__construct();
@@ -82,14 +83,24 @@ class Output extends \Smarty
     $this->assign($key,$value);        
   }
 
+  
   /**
-   * Abre uma pagina (template)
+   * Prepara a pagina para exibicao mas nao abre
    * Usa-se no final da execução dos metodos nas actions     
    * @param String $tpl - Pagina (template) a ser aberta
    */
   public function render($tpl){
-    $this->callShow = true;
-    $this->display($tpl);
+    $this->callShow = true;    
+    $this->view = $tpl;
+  }
+
+  /**
+   * Abre uma pagina (template)
+   * Chamada pelo controllador pai
+   */
+  public function show(){
+    $this->callShow = true;    
+    $this->display($this->view);
   }
 
   /**
