@@ -27,7 +27,7 @@ class Security {
 
     $encode = base64_encode($value);
 
-    if(strlen($encode) > 4){
+    if( strlen($encode) > 4 ){
 
       $div = intval(strlen($encode) / 4);
 
