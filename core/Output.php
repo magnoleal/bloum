@@ -89,7 +89,7 @@ class Output extends \Smarty
    * Usa-se no final da execução dos metodos nas actions     
    * @param String $tpl - Pagina (template) a ser aberta
    */
-  public function render($tpl){
+  public function show($tpl){
     $this->callShow = true;    
     $this->view = $tpl;
   }
@@ -98,7 +98,7 @@ class Output extends \Smarty
    * Abre uma pagina (template)
    * Chamada pelo controllador pai
    */
-  public function show(){
+  public function render(){
     $this->callShow = true;    
     $this->display($this->view);
   }

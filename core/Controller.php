@@ -66,7 +66,11 @@ class Controller
 
     $this->executeFilter(static::$afterFilter, $action);
 
-    $this->output->show();
+
+    if(!$this->output->isCallShow())
+      $this->output->show($action.Config::TEMPLATE_EXT);
+
+    $this->output->render();
 
   }
 

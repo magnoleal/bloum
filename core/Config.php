@@ -37,7 +37,12 @@ class Config{
     const ROOT_SCRIPT = 'index.php';
 
     /**
-    * Constante que define a separacao na url dos parametros, Ex.: controller.action?param1=43    
+    * Constante que define a separacao das actions no filtro, Ex.: index|save|edit
     **/  
     const SEP_ACTION_FILTERS = '|';
+
+     /**
+    * Constante que define a separacao na url dos parametros, Ex.: controller.action?param1=43    
+    **/  
+    const TEMPLATE_EXT = '.tpl';
 }
