@@ -62,4 +62,15 @@ class Input
     return isset ($this->params[$key]);
   }
 
+  /**     
+   * Pega um objeto do input:
+   * Popula o objeto de acordo com suas propriedades e os nomes encontrados no INPUT
+   * @param String $className - Nome da Classe do Objeto que deseja Popular
+   * @return Retorna o objeto populado
+   */
+  public function getObject($className){
+    $reflec = new \ReflectionClass($className);
+    return $reflec->newInstance($this->params);
+  }
+
 }

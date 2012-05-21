@@ -55,14 +55,14 @@ class Controller
     if ( !method_exists($this, $action) ) 
       throw new NotFoundException('Action ' . $action . ' Not Found in Controller ' . $this->url->getController() . '!');
 
+    //inicializando configuracoes de banco de dados
+    Db::init();
     
     $this->executeFilter(static::$beforeFilter, $action);
 
-    $refMetodo = new \ReflectionMethod($this, $action);
-    $metParametros = $refMetodo->getParameters();
+    $refMethod = new \ReflectionMethod($this, $action);
 
-    //ainda falta a questao dos parametros
-    $rs = $refMetodo->invokeArgs($this, array());
+    $rs = $refMethod->invokeArgs($this, $this->mountParams($refMethod));
 
     $this->executeFilter(static::$afterFilter, $action);
 
@@ -97,9 +97,27 @@ class Controller
         continue;
 
       $refFilter = new \ReflectionMethod($this, $filter);
-      $refFilter->invokeArgs($this, array());
+      $refFilter->invokeArgs($this, $this->mountParams($refFilter));
       
     }
+  }
+
+  private function mountParams($refMethod){
+    $metParametros = $refMethod->getParameters();
+
+    $arrayParams = array();
+
+    foreach ($metParametros as $param) {
+      //se for um model, ja passa o objeto populado
+      if (file_exists(DIR_APP.'models/'.ucfirst($param->name.'.php'))){
+        $arrayParams[$param->name] = $this->input->getObject( ucfirst($param->name) );
+      }        
+      elseif($this->input->exist($param->name)){
+        $arrayParams[$param->name] = $this->input->getValue($param->name);
+      }
+    }
+
+    return $arrayParams;
   }
 
   /**
