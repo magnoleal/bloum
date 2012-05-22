@@ -11,15 +11,60 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
  **/
 class Controller
 {
-
+  /**
+   * Objeto Bloum\Url
+   * @var url
+   **/
   protected $url;
+
+  /**
+   * Objeto Bloum\Input
+   * @var input
+   **/
   protected $input;
+
+  /**
+   * Objeto Bloum\Ouput
+   * @var output
+   **/
   protected $output;
+
+  /**
+   * Objeto Bloum\Session
+   * @var session
+   **/
   protected $session;
 
+  /**
+   * Array com os filtros que sao executados antes da action nos controllers: <br/>
+   * Como Usar: static $beforeFilter = array(
+   *              'filter1' => array('only' => 'action1|action2'),
+   *              'filter2' => array('skip' => 'action1|action2'),
+   *              'filter3' => array('only' => 'all')
+   *            );
+   *
+   *
+   * @var beforeFilter
+   **/
   static protected $beforeFilter = array();
+
+  /**
+   * Array com os filtros que sao executados depois da action nos controllers: <br/>
+   * Como Usar: static $afterFilter = array(
+   *              'filter1' => array('only' => 'action1|action2'),
+   *              'filter2' => array('skip' => 'action1|action2'),
+   *              'filter3' => array('only' => 'all')
+   *            );
+   *
+   *
+   * @var afterFilter
+   **/
   static protected $afterFilter = array();
 
+
+  /**
+   * Construtor da classe, instancia as referencias
+   **/  
   function __construct() {
     
     $this->url = Url::getInstance();
@@ -30,17 +75,25 @@ class Controller
   }
 
   /**
-   * Seta um Usuario na Sessão
-   * @param UsuarioBean $user - objeto Usuario
+   * Seta um Usuario na Sessao
+   * @param $user Mixed Valor que represente um Usuario
    */
   public function setUserSession($user){                      
     $this->session->setValue(Session::USER, $user);
   }
 
+  /**
+   * Pega o Usuario da Sessao
+   * @return Mixed Valor que represente um Usuario
+   */
   public function getUserSession(){
     return $this->session->getValue(Session::USER);
   }
 
+  /**
+   * Verifica se o usuario esta logado
+   * @return true|false
+   */
   public function isLogged(){
 
     $this->user = $this->getUserSession();
@@ -51,6 +104,10 @@ class Controller
     return false;
   }
 
+  /**
+   * Executa a chamada da action e filtros caso exista   
+   * @param $action String action que sera executada
+   */
   public function execute($action){
     if ( !method_exists($this, $action) ) 
       throw new NotFoundException('Action ' . $action . ' Not Found in Controller ' . $this->url->getController() . '!');
@@ -74,6 +131,11 @@ class Controller
 
   }
 
+  /**
+   * Executa a chamada de um filtro 
+   * @param $arrayFilter Array Configuracao do filtro
+   * @param $action String action que sera executada
+   */
   public function executeFilter($arrayFilter, $action){
     $filters = array_keys($arrayFilter);
 
@@ -102,6 +164,11 @@ class Controller
     }
   }
 
+  /**
+   * Monta os parametros para chamada de um metodo 
+   * @param $refMethod ReflectionMethod Metodo instanciado por Reflection
+   * @return Array retorna o array com os parametros do metodo e seus valores
+   */
   private function mountParams($refMethod){
     $metParametros = $refMethod->getParameters();
 
@@ -154,7 +221,7 @@ class Controller
     $values = array_merge($this->input->getParams(), $this->output->getTemplateVars());
     $this->session->setValue(Session::SESSION_PARAMS, $values);
     
-    header("Location: ".$this->session->getValue(Session::SESSION_PREVIOUS_URL));       
+    header("Location: ".$this->session->getValue(Session::PREVIOUS_URL));       
   }
 
 }

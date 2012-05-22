@@ -14,10 +14,28 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
  */
 class Url {
 
+  /**
+   * Url Atual
+   * @var url
+   **/
   private $url;
+
+  /**
+   * Controller Atual
+   * @var controller
+   **/
   private $controller;
+
+  /**
+   * Action Atual
+   * @var action
+   **/
   private $action;
 
+  /**
+   * Instancia da classe (Singleton Opcional)
+   * @var $instance
+   **/
   private static $instance = null;
  
   function __construct($url = null) {

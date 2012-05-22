@@ -6,8 +6,17 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
 
 require DIR_BLOUM.'lib/activerecord/ActiveRecord.php';    
 
+/**
+ * Classe Para Configurações gerais do Banco e Active Record<br />
+ * 
+ * @author Magno Leal <magnoleal89@gmail.com>
+ * @version 1.0 - 21 de Maio de 2012
+ */
 class Db {
 
+  /**
+   * Inicializa as configurações
+   **/
   public static function init(){
 
     if(!file_exists(DIR_APP.'config/DbConfig.php'))
@@ -26,6 +35,9 @@ class Db {
       $cfg->set_default_connection($default);
 
     });
+
+    \ActiveRecord\DateTime::$FORMATS['br'] = 'd/m/Y H:i:s';
+    \ActiveRecord\DateTime::$DEFAULT_FORMAT = 'br';
 
   }
 

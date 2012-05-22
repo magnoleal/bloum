@@ -3,10 +3,25 @@ namespace Bloum;
 
 if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
 
+/**
+ * Classe Para Metodos Simples de Seguranca<br />
+ * 
+ * @author Magno Leal <magnoleal89@gmail.com>
+ * @version 1.0 - 08 de Maio de 2012
+ */
 class Security {
 
+  /**
+   * Simbolo para separacao de hashs
+   * @var SEP
+   **/
   const SEP = '$!';
 
+  /**
+   * Metodo que gera uma chave randomica
+   * @param $size int - tamanho da chave
+   * @return String chave
+   **/
   static function randomKey($size) {
       
     $chars = "A,b,C,d,e,f,G,H,I,j,l,m,n,X,Z,w,Y,o,p,Q,r,S,t,Y,1,2,3,4,5,6,7,8,9,0";        
@@ -17,6 +32,11 @@ class Security {
     return substr($key, 0, $size);
   }    
       
+  /**
+   * Metodo que codifica um valor
+   * @param $value String - valor a ser codificado
+   * @return String valor codificado
+   **/    
   static function encode($value) {
     $value = strrev($value);
     
@@ -48,6 +68,11 @@ class Security {
     return Security::randomKey(8) . Security::SEP . $encode . Security::SEP . Security::randomKey(8);
   }
 
+  /**
+   * Metodo que decodifica um valor
+   * @param $value String - valor a ser decodificado
+   * @return String valor decodificado
+   **/   
   static function decode($value) {
     $encode = explode(Security::SEP, $value);
     

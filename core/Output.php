@@ -7,7 +7,7 @@ require DIR_BLOUM.'lib/smarty/Smarty.class.php';
 
 /**
  * Classe Para Manipulação de Parametros Passados do Controller para View<br />
- * 
+ * Extend o PhpSmarty
  * @author Magno Leal <magnoleal89@gmail.com>
  * @version 1.0 - 18 de Maio de 2012
  */
@@ -41,6 +41,9 @@ class Output extends \Smarty
     $this->callShow = $callShow;
   }  
 
+  /**
+   * Inicializa as configurações iniciais
+   **/
   public function init(){
     $this->cache_dir = DIR_BLOUM."lib/smarty/cache";
     $this->config_dir = DIR_BLOUM."lib/smarty/configs";
@@ -52,9 +55,9 @@ class Output extends \Smarty
   /**
    * Seta um objeto no output:
    * Percorre as propriedades do objeto e joga no OUTPUT
-   * @param Object $objeto - Objeto a ser injetado
-   * @param String $prefix - Caso queria identificar as propriedades com algum prefixo (Ex.: usuarioEmail, usuarioLogin)
-   * @param String $sufix - Caso queria identificar as propriedades com algum sufixo (Ex.: emailUsuario, loginUsuario)
+   * @param $objeto Object - Objeto a ser injetado
+   * @param $prefix String - Caso queria identificar as propriedades com algum prefixo (Ex.: usuarioEmail, usuarioLogin)
+   * @param $sufix String - Caso queria identificar as propriedades com algum sufixo (Ex.: emailUsuario, loginUsuario)
    */
   public function addObject($objeto = null, $prefix = "", $sufix = ""){
 
@@ -76,8 +79,8 @@ class Output extends \Smarty
 
   /**
    * Joga um value no output
-   * @param String $key - nome de idenficação do value
-   * @param Mixed $value - value a ser injetado (pode ser qualquer tipo de dado: String, int, array, etc)
+   * @param $key String - nome de idenficação do value
+   * @param $value Mixed - value a ser injetado (pode ser qualquer tipo de dado: String, int, array, etc)
    */
   public function addValue($key, $value){                
     $this->assign($key,$value);        
@@ -87,7 +90,7 @@ class Output extends \Smarty
   /**
    * Prepara a pagina para exibicao mas nao abre
    * Usa-se no final da execução dos metodos nas actions     
-   * @param String $tpl - Pagina (template) a ser aberta
+   * @param $tpl String - Pagina (template) a ser aberta
    */
   public function show($tpl){
     $this->callShow = true;    
@@ -105,7 +108,7 @@ class Output extends \Smarty
 
   /**
    * Retorna o conteudo de uma pagina (template)
-   * @param String $tpl - Pagina (template) a ser retornada
+   * @param $tpl String - Pagina (template) a ser retornada
    */
   public function getHtml($tpl){
     return $this->fetch($tpl);

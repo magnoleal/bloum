@@ -4,14 +4,23 @@ namespace Bloum;
 if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
 
 /**
- * Classe Para Manipulação de Parametros Passados Para o Servidor<br />
+ * Classe (Singleton) Para Manipulação de Parametros Passados Para o Servidor<br />
  * 
  * @author Magno Leal <magnoleal89@gmail.com>
  * @version 1.0 - 08 de Maio de 2012
  */
 class Input
 {
+  /**
+   * Array com os parametros passados
+   * @var params
+   **/
   private $params;
+
+  /**
+   * Instancia da classe (Singleton)
+   * @var instance
+   **/
   private static $instance = null;
 
   private function __construct()
@@ -36,6 +45,10 @@ class Input
     $this->extractFromArray($_REQUEST);                    
   }
 
+  /**
+   * Extrai os valores de um array ex.: $_POST, $_GET
+   * @param $array Array   
+   */
   private function extractFromArray($array)
   {
     $keys = array_keys($array);
@@ -46,7 +59,7 @@ class Input
 
   /**
    * Pega um Valor (objeto ou nao) da Sessão
-   * @param String $chave - identificação do valor
+   * @param $key String - identificação do valor
    * @return Mixed Valor da Sesssao
    */
   public function getValue($key){
@@ -55,7 +68,7 @@ class Input
 
   /**
    * Pega um Valor (objeto ou nao) da Sessão
-   * @param String $chave - identificação do valor
+   * @param $key String - identificação do valor
    * @return Mixed Valor da Sesssao
    */
   public function exist($key){
@@ -65,7 +78,7 @@ class Input
   /**     
    * Pega um objeto do input:
    * Popula o objeto de acordo com suas propriedades e os nomes encontrados no INPUT
-   * @param String $className - Nome da Classe do Objeto que deseja Popular
+   * @param $className String - Nome da Classe do Objeto que deseja Popular
    * @return Retorna o objeto populado
    */
   public function getObject($className){

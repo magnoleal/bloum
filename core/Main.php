@@ -5,9 +5,24 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
 
 require_once DIR_BLOUM.'core/Exceptions.php';
 
+/**
+ * Classe Principal do Framework<br />
+ * 
+ * @author Magno Leal <magnoleal89@gmail.com>
+ * @version 1.0 - 11 de Maio de 2012
+ **/
 class Main {
 
+  /**
+   * Objeto Bloum\Url
+   * @var url
+   **/
   private $url;  
+
+  /**
+   * Objeto Bloum\Session
+   * @var url
+   **/
   private $session;
 
   function __construct() {
@@ -18,6 +33,9 @@ class Main {
 
   }
 
+  /**
+   * Seta o id da sessao em casos de requisicao flash
+   **/
   private function setSessionFromFlash() {
     if (isset($_REQUEST[$this->keySessionID]) && strlen($_REQUEST[$this->keySessionID]) > 0) {
       session_id($_REQUEST[$this->keySessionID]);
@@ -26,10 +44,7 @@ class Main {
   }
 
   /**
-   * undocumented function
-   *
-   * @return void
-   * @author 
+   * Metodo principal, executa a chamada dos controllers
    **/
   public function run(){
     $isAjax = false;
