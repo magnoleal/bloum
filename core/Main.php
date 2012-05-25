@@ -27,6 +27,8 @@ class Main {
 
   function __construct() {
 
+    spl_autoload_register(array($this, 'loader'));
+
     if (!defined('DIR_APP')) 
       throw new NotFoundException('Constant DIR_APP Not Found!');
     
@@ -72,6 +74,39 @@ class Main {
     if (!$isAjax)            
       $isAjax = Util::isRequestAjax();                                
 
+  }
+
+  public static function loader($class){
+    $namespace = '';
+    $className = '';
+
+    $parts = explode('\\', $class);
+
+    $count = count($parts);
+    $class = $parts[$count-1];
+
+    if($count > 1){        
+      unset($parts[$count - 1]);
+      $namespace = strtolower( implode("/", $parts) );
+    }  
+
+    if ($namespace == 'bloum')
+      require_once DIR_BLOUM."core/$class.php";
+
+    elseif(file_exists(DIR_APP."models/$class.php"))
+      require_once DIR_APP."models/$class.php";    
+    
+    elseif (strpos($class,'Controller'))
+      require_once DIR_APP."controllers/$class.php";
+    
+    elseif (strpos($class,'Model'))
+      require_once DIR_APP."models/$class.php";
+
+    elseif (strpos($class,'Helper'))
+      require_once DIR_APP."helpers/$class.php";
+    
+    elseif (strpos($class,'Config'))
+      require_once DIR_APP."config/$class.php"; 
   }
 
 }
