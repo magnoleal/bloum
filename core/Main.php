@@ -26,6 +26,9 @@ class Main {
   private $session;
 
   function __construct() {
+
+    if (!defined('DIR_APP')) 
+      throw new NotFoundException('Constant DIR_APP Not Found!');
     
     $this->url = Url::getInstance();
 

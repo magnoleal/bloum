@@ -114,16 +114,28 @@ class Controller
 
     //inicializando configuracoes de banco de dados
     Db::init();
+
+    $existAppContr = file_exists(DIR_APP.'controllers/ApplicationController.php');
+
+    //executando globalBeforeFilter do ApplicationController
+    if($existAppContr && isset(\ApplicationController::$globalBeforeFilter))
+      $this->executeGlobalFilter(\ApplicationController::$globalBeforeFilter);  
     
+    //executando beforeFilter do Controller corrente
     $this->executeFilter(static::$beforeFilter, $action);
 
+    //executando a action chamada na url
     $refMethod = new \ReflectionMethod($this, $action);
-
     $rs = $refMethod->invokeArgs($this, $this->mountParams($refMethod));
 
+    //executando afterFilter do Controller corrente
     $this->executeFilter(static::$afterFilter, $action);
 
+    //executando globalAfterFilter do ApplicationController
+    if($existAppContr && isset(\ApplicationController::$globalAfterFilter))
+      $this->executeGlobalFilter(\ApplicationController::$globalAfterFilter);  
 
+    //caso nao passe o template, chama um com o mesmo nome da action
     if(!$this->output->isCallShow())
       $this->output->show($action.Config::TEMPLATE_EXT);
 
@@ -136,31 +148,58 @@ class Controller
    * @param $arrayFilter Array Configuracao do filtro
    * @param $action String action que sera executada
    */
+  public function executeGlobalFilter($arrayFilter){
+
+    if(count($arrayFilter) > 0){
+
+      foreach ($arrayFilter as $filter) {
+
+        if ( !method_exists($this, $filter) ) 
+          throw new NotFoundException('GlobalFilter ' . $filter . ' Not Found in ApplicationController!');
+                
+        $refFilter = new \ReflectionMethod($this, $filter);
+        $refFilter->invokeArgs($this, $this->mountParams($refFilter));
+        
+      }
+
+    }
+  }
+
+  /**
+   * Executa a chamada de um filtro 
+   * @param $arrayFilter Array Configuracao do filtro
+   * @param $action String action que sera executada
+   */
   public function executeFilter($arrayFilter, $action){
-    $filters = array_keys($arrayFilter);
 
-    foreach ($filters as $filter) {
+    if(count($arrayFilter) > 0){
 
-      $filterParams = $arrayFilter[$filter];
+      $filters = array_keys($arrayFilter);
 
-      if ( !method_exists($this, $filter) ) 
-        throw new NotFoundException('Filter ' . $filter . ' Not Found in Controller ' . $this->url->getController() . '!');
-      
-      $skip = isset($filterParams['skip']) ? $filterParams['skip'] : '';
-      $skip = explode(Config::SEP_ACTION_FILTERS, $skip);
+      foreach ($filters as $filter) {
 
-      if( array_search($action, $skip) !== FALSE )
-        continue;
+        $filterParams = $arrayFilter[$filter];
 
-      $only = isset($filterParams['only']) ? $filterParams['only'] : '';
-      $only = explode(Config::SEP_ACTION_FILTERS, $only);
+        if ( !method_exists($this, $filter) ) 
+          throw new NotFoundException('Filter ' . $filter . ' Not Found in Controller ' . $this->url->getController() . '!');
+        
+        $skip = isset($filterParams['skip']) ? $filterParams['skip'] : '';
+        $skip = explode(Config::SEP_ACTION_FILTERS, $skip);
 
-      if( strlen($only[0]) > 0 && $only[0] != 'all' && array_search($action, $only) === FALSE )
-        continue;
+        if( array_search($action, $skip) !== FALSE )
+          continue;
 
-      $refFilter = new \ReflectionMethod($this, $filter);
-      $refFilter->invokeArgs($this, $this->mountParams($refFilter));
-      
+        $only = isset($filterParams['only']) ? $filterParams['only'] : '';
+        $only = explode(Config::SEP_ACTION_FILTERS, $only);
+
+        if( strlen($only[0]) > 0 && $only[0] != 'all' && array_search($action, $only) === FALSE )
+          continue;
+
+        $refFilter = new \ReflectionMethod($this, $filter);
+        $refFilter->invokeArgs($this, $this->mountParams($refFilter));
+        
+      }
+
     }
   }
 
