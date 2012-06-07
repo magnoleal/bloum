@@ -65,7 +65,7 @@ class Controller
    * Layout default
    * @var layout
    **/
-  protected $layout = "application";
+  static protected $layout = "application";
 
   /**
    * Construtor da classe, instancia as referencias
@@ -141,25 +141,8 @@ class Controller
       $this->executeGlobalFilter(\ApplicationController::$globalAfterFilter);  
 
     //caso nao passe o template, chama um com o mesmo nome da action
-    if(!$this->output->isCallShow()){
-      
-      $ct = $this->url->getController();
-      if (isset(static::$layout)){
-        $ctLayout = static::$layout;
-      } else if(file_exists(DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT)){
-        $ctLayout = DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT;
-      }else{
-        $ctLayout = 'layouts/'.$this->layout.Config::TEMPLATE_EXT;
-      }
-      
-      #$ctLayout = DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT;
-      
-      #if(!file_exists($ctLayout))
-      #  $ctLayout = 
-      
-      $this->output->show('extends:'.$ctLayout.'|'.$ct."/".$action.Config::TEMPLATE_EXT);
-      
-    }
+    if(!$this->output->isCallShow())
+      $this->show($action);
 
     $this->output->render();
 
@@ -283,6 +266,50 @@ class Controller
     $this->session->setValue(Session::SESSION_PARAMS, $values);
     
     header("Location: ".$this->session->getValue(Session::PREVIOUS_URL));       
+  }
+
+  public function getLayoutPath(){
+    $ct = $this->url->getController();
+      
+    $ctLayout = "extends:";
+
+    //1ª opcao: layout na classe filha
+    //2ª opcao: layout com o nome do controller
+    //Ultima opcao: layout default
+    if (static::$layout != "application" ){
+      
+      if(strlen(static::$layout) > 0)
+        $ctLayout .= static::$layout;
+      else
+        $ctLayout = '';
+
+    } else if(file_exists(DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT)){
+      $ctLayout .= DIR_APP.'views/layouts/'.$ct;
+    } else{
+      $ctLayout .= 'layouts/application';
+    }         
+
+    if(strlen($ctLayout) > 0)
+      $ctLayout .= Config::TEMPLATE_EXT."|";
+
+    return $ctLayout;
+  }
+
+  public function getTemplatePath($tpl = ""){
+    $tpl = strlen($tpl) > 0 ? $tpl : $this->url->getAction();
+    return $this->getLayoutPath().$this->url->getController()."/".$tpl.Config::TEMPLATE_EXT;
+  }
+
+  public function show($tpl){    
+    $this->output->show($this->getTemplatePath($tpl));
+  }
+
+  /**
+   * Retorna o conteudo de uma pagina (template)
+   * @param $tpl String - Pagina (template) a ser retornada
+   */
+  public function getHtml($tpl){
+    return $this->output->fetch($this->getTemplatePath($tpl));     
   }
 
 }
