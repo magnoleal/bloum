@@ -51,6 +51,8 @@ class Output extends \Smarty
     $this->plugins_dir = DIR_BLOUM."lib/smarty/plugins";        
     $this->template_dir = DIR_APP."views/";
 
+    $this->addPluginsDir(DIR_BLOUM."tags/");
+
     if(is_dir(DIR_APP."tags/")) //custom plugins da app
       $this->addPluginsDir(DIR_APP."tags/");
 

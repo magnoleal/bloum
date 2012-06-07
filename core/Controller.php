@@ -61,6 +61,11 @@ class Controller
    **/
   static protected $afterFilter = array();
 
+  /**
+   * Layout default
+   * @var layout
+   **/
+  protected $layout = "application";
 
   /**
    * Construtor da classe, instancia as referencias
@@ -136,8 +141,25 @@ class Controller
       $this->executeGlobalFilter(\ApplicationController::$globalAfterFilter);  
 
     //caso nao passe o template, chama um com o mesmo nome da action
-    if(!$this->output->isCallShow())
-      $this->output->show($action.Config::TEMPLATE_EXT);
+    if(!$this->output->isCallShow()){
+      
+      $ct = $this->url->getController();
+      if (isset(static::$layout)){
+        $ctLayout = static::$layout;
+      } else if(file_exists(DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT)){
+        $ctLayout = DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT;
+      }else{
+        $ctLayout = 'layouts/'.$this->layout.Config::TEMPLATE_EXT;
+      }
+      
+      #$ctLayout = DIR_APP.'views/layouts/'.$ct.Config::TEMPLATE_EXT;
+      
+      #if(!file_exists($ctLayout))
+      #  $ctLayout = 
+      
+      $this->output->show('extends:'.$ctLayout.'|'.$ct."/".$action.Config::TEMPLATE_EXT);
+      
+    }
 
     $this->output->render();
 

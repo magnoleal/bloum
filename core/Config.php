@@ -41,8 +41,23 @@ class Config{
     **/  
     const SEP_ACTION_FILTERS = '|';
 
-     /**
+    /**
     * Constante que define a separacao na url dos parametros, Ex.: controller.action?param1=43    
     **/  
     const TEMPLATE_EXT = '.tpl';
+    
+    /**
+    * Constante que define a localizacao dos arquivos css    
+    **/  
+    const DIR_CSS = 'app/assets/css/';
+    
+    /**
+    * Constante que define a localizacao dos arquivos js    
+    **/  
+    const DIR_JS = 'app/assets/js/';
+    
+    /**
+    * Constante que define a localizacao dos arquivos de imagens
+    **/  
+    const DIR_IMAGES = 'app/assets/images/';
 }

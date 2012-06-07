@@ -28,4 +28,21 @@ class Util {
       (stripos($_SERVER['HTTP_USER_AGENT'], 'shockwave') > 0 || stripos($_SERVER['HTTP_USER_AGENT'], 'flash') > 0));
   }
   
+  public static function getFileName($file, $withExtension = false){
+    $ext = explode("/", $file);
+
+    if(count($ext) > 1)
+      $name = $ext[count($ext)-1];
+    else
+      $name = $file;
+    
+    if(!$withExtension){
+      $name = explode (".", $name);
+      unset ($name[count($name) - 1]);
+      $name = implode(".", $name);
+    }
+
+    return $name;
+  }
+  
 }
