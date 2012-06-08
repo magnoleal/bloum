@@ -13,7 +13,6 @@ require DIR_BLOUM.'lib/smarty/Smarty.class.php';
  */
 class Output extends \Smarty
 {
-  private $callShow = false;
   private static $instance = null; 
   private $view;
 
@@ -32,14 +31,6 @@ class Output extends \Smarty
   public function getParams(){
     return $this->params;
   }
-
-  public function isCallShow() {
-    return $this->callShow;
-  }
-
-  public function setCallShow($callShow) {
-    $this->callShow = $callShow;
-  }  
 
   /**
    * Inicializa as configurações iniciais
@@ -99,17 +90,7 @@ class Output extends \Smarty
    * @param $tpl String - Pagina (template) a ser aberta
    */
   public function show($tpl){
-    $this->callShow = true;    
-    $this->view = $tpl;
-  }
-
-  /**
-   * Abre uma pagina (template)
-   * Chamada pelo controllador pai
-   */
-  public function render(){
-    $this->callShow = true;    
-    $this->display($this->view);
+    $this->display($tpl);
   }
 
   /**

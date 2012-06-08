@@ -5,13 +5,14 @@
 function smarty_function_css_file($params, $smarty)
 {  
   $file = isset($params['file']) ? $params['file'] : '';
+  $out = isset($params['out']) ? $params['out'] : false;
   
   if(!empty ($file)){
     
     if(stripos($file, ".css") === FALSE)
       $file .= ".css";
     
-    $path = \Bloum\Config::DIR_CSS.$file;
+    $path = $out ? 'app/assets/'.$file : \Bloum\Config::DIR_CSS.$file;
     $params_s = "";
     
     unset ($params['file']);

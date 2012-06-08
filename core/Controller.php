@@ -66,6 +66,18 @@ class Controller
    * @var layout
    **/
   static protected $layout = "application";
+  
+  /**
+   * Tipos de mensagens - error|success|info|warning
+   * @var array 
+   */
+  protected $messages = array();
+  
+  /**
+   * Variavel para definir se foi chamado metodos de redirecionamento
+   * @var boolean 
+   */
+  private $callShow = false;
 
   /**
    * Construtor da classe, instancia as referencias
@@ -76,9 +88,15 @@ class Controller
     $this->input = Input::getInstance();
     $this->output = Output::getInstance();
     $this->session = Session::getInstance();
+    
+    $this->setOutputFromSession();
 
   }
 
+  public function setCallShow($callShow) {
+    $this->callShow = $callShow;
+  }
+    
   /**
    * Seta um Usuario na Sessao
    * @param $user Mixed Valor que represente um Usuario
@@ -122,29 +140,35 @@ class Controller
 
     $existAppContr = file_exists(DIR_APP.'controllers/ApplicationController.php');
 
-    //executando globalBeforeFilter do ApplicationController
-    if($existAppContr && isset(\ApplicationController::$globalBeforeFilter))
-      $this->executeGlobalFilter(\ApplicationController::$globalBeforeFilter);  
+    try {
+
+      //executando globalBeforeFilter do ApplicationController
+      if($existAppContr && isset(\ApplicationController::$globalBeforeFilter))
+        $this->executeGlobalFilter(\ApplicationController::$globalBeforeFilter);  
+
+      //executando beforeFilter do Controller corrente
+      $this->executeFilter(static::$beforeFilter, $action);
+
+      //executando a action chamada na url
+      $refMethod = new \ReflectionMethod($this, $action);
+      $rs = $refMethod->invokeArgs($this, $this->mountParams($refMethod));
+
+      //executando afterFilter do Controller corrente
+      $this->executeFilter(static::$afterFilter, $action);
+
+      //executando globalAfterFilter do ApplicationController
+      if($existAppContr && isset(\ApplicationController::$globalAfterFilter))
+        $this->executeGlobalFilter(\ApplicationController::$globalAfterFilter);  
+
+      //caso nao passe o template, chama um com o mesmo nome da action
+      if(!$this->callShow)
+        $this->show($action);
     
-    //executando beforeFilter do Controller corrente
-    $this->executeFilter(static::$beforeFilter, $action);
-
-    //executando a action chamada na url
-    $refMethod = new \ReflectionMethod($this, $action);
-    $rs = $refMethod->invokeArgs($this, $this->mountParams($refMethod));
-
-    //executando afterFilter do Controller corrente
-    $this->executeFilter(static::$afterFilter, $action);
-
-    //executando globalAfterFilter do ApplicationController
-    if($existAppContr && isset(\ApplicationController::$globalAfterFilter))
-      $this->executeGlobalFilter(\ApplicationController::$globalAfterFilter);  
-
-    //caso nao passe o template, chama um com o mesmo nome da action
-    if(!$this->output->isCallShow())
-      $this->show($action);
-
-    $this->output->render();
+    } catch (\Exception $exc) {      
+      $this->messages['error'] = $exc->getMessage();
+      $this->output->addValue('messages', $this->messages);
+      $this->back();
+    }
 
   }
 
@@ -238,7 +262,8 @@ class Controller
    * a function chain
    * @param String $url - url de redirecionamento (Ex.: UsuarioActioin.listar)
    */
-  public function redirect($url){        
+  public function redirect($url){    
+    $this->callShow = true;
     header("Location: $url");
   }
 
@@ -249,7 +274,9 @@ class Controller
    * a function redirect
    * @param String $url - url de redirecionamento (Ex.: UsuarioActioin.listar)
    */
-  public function chain($url){        
+  public function chain($url){    
+    $this->callShow = true;
+    $this->setMessagesOutput();
     $this->session->setValue(Session::SESSION_PARAMS, $this->output->getTemplateVars());
     header("Location: $url");        
   }
@@ -262,6 +289,9 @@ class Controller
    * @param String $url - url de redirecionamento (Ex.: UsuarioActioin.listar)
    */
   public function back(){
+    $this->callShow = true;
+    
+    $this->setMessagesOutput();
     $values = array_merge($this->input->getParams(), $this->output->getTemplateVars());
     $this->session->setValue(Session::SESSION_PARAMS, $values);
     
@@ -300,7 +330,9 @@ class Controller
     return $this->getLayoutPath().$this->url->getController()."/".$tpl.Config::TEMPLATE_EXT;
   }
 
-  public function show($tpl){    
+  public function show($tpl){
+    $this->callShow = true;
+    $this->setMessagesOutput();
     $this->output->show($this->getTemplatePath($tpl));
   }
 
@@ -309,7 +341,37 @@ class Controller
    * @param $tpl String - Pagina (template) a ser retornada
    */
   public function getHtml($tpl){
+    $this->callShow = true;
+    $this->setMessagesOutput();
     return $this->output->fetch($this->getTemplatePath($tpl));     
-  }
+  }    
 
+  /**
+   * Seta no Output os parametros existentes na sessão,
+   * metodo utilizado quando ocorrer um Encadeamento de Actions,
+   * ou seja o valor de output de uma action e passado para outra
+   */
+  private function setOutputFromSession(){
+    $sessionParams = $this->session->getValue(Session::SESSION_PARAMS);
+    
+    
+
+    if(isset ($sessionParams) && count($sessionParams) > 0){
+
+      $keys = array_keys($sessionParams);
+      
+      for($i = 0; $i < count($keys); $i++){
+        $this->output->addValue($keys[$i], $sessionParams[$keys[$i]]);
+      }
+
+      $this->session->setValue(Session::SESSION_PARAMS, null);
+
+    }
+  }
+  
+  private function setMessagesOutput(){
+    if( $this->output->getTemplateVars('messages') == null )
+        $this->output->addValue('messages', $this->messages);
+  }
+  
 }

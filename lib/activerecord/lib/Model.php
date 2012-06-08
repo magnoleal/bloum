@@ -249,7 +249,10 @@ class Model
 	 */
 	public function __construct(array $attributes=array(), $guard_attributes=true, $instantiating_via_find=false, $new_record=true)
 	{
-		$this->__new_record = $new_record;
+        $this->__new_record = $new_record;
+      
+        if(isset ($attributes['id']) && intval($attributes['id']) > 0)
+          $this->__new_record = false;
 
 		// initialize attributes applying defaults
 		if (!$instantiating_via_find)
