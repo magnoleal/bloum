@@ -60,4 +60,9 @@ class Config{
     * Constante que define a localizacao dos arquivos de imagens
     **/  
     const DIR_IMAGES = 'app/assets/images/';
+    
+    /**
+    * Ativar Minify
+    **/  
+    const MINIFY_ENABLE = true;
 }

@@ -45,4 +45,16 @@ class Util {
     return $name;
   }
   
+  public static function numPages($total, $size) {
+    return ceil($total / $size);
+  }
+
+  public static function numOffset($page, $size) {
+
+    if (isset($page) && $page > 0)
+      return ($page * $size) - $size;
+
+    return 0;
+  }
+  
 }

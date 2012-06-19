@@ -152,6 +152,9 @@ class Controller
       //executando a action chamada na url
       $refMethod = new \ReflectionMethod($this, $action);
       $rs = $refMethod->invokeArgs($this, $this->mountParams($refMethod));
+      
+      if(isset ($rs))
+        $this->output->addValue ($rs, $rs);
 
       //executando afterFilter do Controller corrente
       $this->executeFilter(static::$afterFilter, $action);

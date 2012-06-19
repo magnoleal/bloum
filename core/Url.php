@@ -43,10 +43,18 @@ class Url {
     $this->url = isset($url) ? $url : $_SERVER['PHP_SELF'];
 
     $this->url = substr($this->url, stripos($this->url, Config::ROOT_SCRIPT) + strlen(Config::ROOT_SCRIPT));      
+    
+    $paramGet = explode($this->url, $_SERVER ['REQUEST_URI']);
+    if (count($paramGet) > 1)
+        $paramGet = $paramGet[1];
+    else
+        $paramGet = '';
 
+    $this->url .= $paramGet;
+    
     if(strlen($this->url) <= 0)
       $this->url = "index.index";
-    elseif($this->url[0] = '/')
+    elseif($this->url[0] == '/')
       $this->url = substr($this->url, 1);
 
     $this->explode();

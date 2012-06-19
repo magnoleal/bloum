@@ -18,13 +18,7 @@ class Main {
    * @var url
    **/
   private $url;  
-
-  /**
-   * Objeto Bloum\Session
-   * @var url
-   **/
-  private $session;
-
+ 
   function __construct() {
 
     spl_autoload_register(array($this, 'loader'));
@@ -33,18 +27,17 @@ class Main {
       throw new NotFoundException('Constant DIR_APP Not Found!');
     
     $this->url = Url::getInstance();
-
     @session_start();
-
+    
   }
 
   /**
    * Seta o id da sessao em casos de requisicao flash
    **/
-  private function setSessionFromFlash() {
+  private function setSessionFromFlash() {die('sdds');
     if (isset($_REQUEST[$this->keySessionID]) && strlen($_REQUEST[$this->keySessionID]) > 0) {
       session_id($_REQUEST[$this->keySessionID]);
-      @session_start();
+      #@session_start();
     }
   }
 
@@ -64,16 +57,29 @@ class Main {
     if ( !file_exists(DIR_APP . "controllers/" .  $controllerName . ".php") )
       throw new NotFoundException('Controller ' .  $controllerName . ' Not Found!');
 
-    $controller = new $controllerName();    
-    $controller->execute($this->url->getAction());
-    
-    $session = Session::getInstance();    
-    $session->setUrls($this->url->getUrl());
-
-
     if (!$isAjax)            
-      $isAjax = Util::isRequestAjax();                                
+      $isAjax = Util::isRequestAjax(); 
+    
+    if(!$isAjax){       
+      $session = Session::getInstance();    
+      $session->setUrls($this->url->getUrl());
+    }
 
+    try {
+      
+      $controller = new $controllerName();    
+      $controller->execute($this->url->getAction());
+      
+    } catch (\Exception $exc) {
+      
+      if ($isAjax){        
+        echo json_encode(array('error' => $exc->getMessage()));
+      }else{
+        var_dump($exc->getMessage());
+      }
+      
+    }
+    
   }
 
   public static function loader($class){
