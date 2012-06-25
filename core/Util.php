@@ -57,4 +57,17 @@ class Util {
     return 0;
   }
   
+  public static function camelize($name){
+    $name = str_replace(array('-', '_'), ' ', $name);
+    $name = ucwords($name);
+    $name = str_replace(' ', '', $name); 
+    return lcfirst($name); 
+  }
+  
+  public static function underscore($name) {
+    $name[0] = strtolower($name[0]);
+    $func = create_function('$c', 'return "_" . strtolower($c[1]);');
+    return preg_replace_callback('/([A-Z])/', $func, $name);
+  }
+  
 }

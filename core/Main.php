@@ -34,7 +34,7 @@ class Main {
   /**
    * Seta o id da sessao em casos de requisicao flash
    **/
-  private function setSessionFromFlash() {die('sdds');
+  private function setSessionFromFlash() {
     if (isset($_REQUEST[$this->keySessionID]) && strlen($_REQUEST[$this->keySessionID]) > 0) {
       session_id($_REQUEST[$this->keySessionID]);
       #@session_start();
@@ -84,8 +84,6 @@ class Main {
 
   public static function loader($class){
     $namespace = '';
-    $className = '';
-
     $parts = explode('\\', $class);
 
     $count = count($parts);
@@ -98,6 +96,8 @@ class Main {
 
     if ($namespace == 'bloum')
       require_once DIR_BLOUM."core/$class.php";
+    elseif ($namespace == 'gen')
+      require_once DIR_BLOUM."gen/$class.php";
 
     elseif(file_exists(DIR_APP."models/$class.php"))
       require_once DIR_APP."models/$class.php";    
@@ -112,7 +112,7 @@ class Main {
       require_once DIR_APP."helpers/$class.php";
     
     elseif (strpos($class,'Config'))
-      require_once DIR_APP."config/$class.php"; 
+      require_once DIR_APP."config/$class.php";     
   }
 
 }

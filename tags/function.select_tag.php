@@ -7,8 +7,7 @@ require DIR_BLOUM . 'lib/smarty/plugins/function.html_options.php';
  */
 function smarty_function_select_tag($params, $smarty) {
 
-  $model = strtolower($params['model']);
-  $_params = array();
+  $model = $params['model'];
 
   if (!isset($params['blank_option']))
     $params['blank_option'] = true;
@@ -21,9 +20,13 @@ function smarty_function_select_tag($params, $smarty) {
   unset($params['model']);
   unset($params['key']);
   unset($params['value']);
+  
+  \Bloum\Util::underscore($model);
+  
+  $under_name = \Bloum\Util::underscore($model);
 
-  $params['name'] = isset($params['name']) ? $params['name'] : $model . '_id';
-  $params['name'] = isset($params['id']) ? $params['id'] : $model . '_id';
+  $params['name'] = isset($params['name']) ? $params['name'] : $under_name. '_id';
+  $params['id'] = isset($params['id']) ? $params['id'] : $under_name . '_id';
   $options = isset($params['options']) ? $params['options'] : $name_object::all();
 
   $array_options = array();
