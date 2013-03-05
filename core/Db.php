@@ -4,7 +4,7 @@ namespace Bloum;
 
 if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
 
-require DIR_BLOUM.'lib/activerecord/ActiveRecord.php';    
+require_once DIR_BLOUM.'lib/activerecord/ActiveRecord.php';    
 
 /**
  * Classe Para Configurações gerais do Banco e Active Record<br />
@@ -42,3 +42,6 @@ class Db {
   }
 
 }
+
+//inicializando configuracoes de banco de dados
+Db::init();

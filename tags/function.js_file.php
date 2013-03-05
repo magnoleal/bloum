@@ -11,7 +11,7 @@ function smarty_function_js_file($params, $smarty)
     if(stripos($file, ".js") === FALSE)
       $file .= ".js";
     
-    $path = \Bloum\Config::DIR_JS.$file;
+    $path = HOST_PATH.\Bloum\Config::DIR_JS.$file;
     $params_s = "";
     
     unset ($params['file']);

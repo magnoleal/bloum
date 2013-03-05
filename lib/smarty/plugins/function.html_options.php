@@ -130,7 +130,7 @@ function smarty_function_html_options($params, $template)
 }
 
 function smarty_function_html_options_optoutput($key, $value, $selected, $id, $class, &$idx)
-{
+{   $class = ''; //Magno: Evitando classe nas opcoes
     if (!is_array($value)) {
         $_key = smarty_function_escape_special_chars($key);
         $_html_result = '<option value="' . $_key . '"';

@@ -12,9 +12,9 @@ require_once 'Base.php';
 class Controller extends Base {
   
   
-  function __construct($model, $isCRUD = true) {    
+  function __construct($model, $namespace = '', $isCRUD = true) {    
     $this->isCRUD = $isCRUD;
-    parent::__construct($model);
+    parent::__construct($model, $namespace);
   }
 
   public function generate() {
@@ -22,6 +22,8 @@ class Controller extends Base {
     $tpl = "controller.php";    
     $this->content = file_get_contents(DIR_TEMPLATES.$tpl);
     $this->replaceName();
+    $this->content = str_replace("#NaMe", ucfirst($this->nameModel), $this->content);
+    $this->replaceSep();
     
     if ($this->isCRUD) {
       $this->content = str_replace("#isCrudBegin", "", $this->content);

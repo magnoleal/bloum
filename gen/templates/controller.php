@@ -4,7 +4,8 @@
  *
  * @author Magno
  */
-class #NameController extends ApplicationController{ 
+class #NaMeController extends ApplicationController{ 
+  static $layout = 'admin';	
   #isCrudBegin
   public function cadastro(){
   }
@@ -13,7 +14,7 @@ class #NameController extends ApplicationController{
     
     if($#name->save()){ 
       $this->messages['success'] = ConstantesConfig::MSG_SUCCESS;
-      parent::chain('#Name.detalhes?id='.$#name->id);
+      parent::chain('admin#sep#name#sepdetalhes?id='.$#name->id);
     }
     else{
       $this->messages['error'] = $#name->errors->to_array();
@@ -23,34 +24,57 @@ class #NameController extends ApplicationController{
   }
   
   public function editar($id) {
-    $this->output->addValue('model', #Name::find($id));
+    $this->output->addValue('model', #NaMe::find($id));
     parent::show('cadastro');
   }
   
   public function excluir($id) {
-    $model = #Name::find($id);
-    $model->delete();
+	if(is_array($id)){
+      #NaMe::table()->delete( array('id' => $id) );
+    }else{
+      $model = #NaMe::find($id);
+      $model->delete();
+    }
+    
     $this->messages['success'] = ConstantesConfig::MSG_SUCCESS;
-    parent::chain('#Name.listar');
+    parent::chain('admin#sep#name#seplistar');  
   }
+  
+  public function copiar($id){
+    if(is_array($id)){
+      
+      foreach ($id as $pk) {
+        $model = #NaMe::find($pk);
+        $model->copy();
+      }
+      
+    }else{
+      $model = #NaMe::find($id);
+      $model->copy();
+    }
+    
+    $this->messages['success'] = ConstantesConfig::MSG_SUCCESS;
+    parent::chain('admin#sep#name#seplistar');
+  }
+  
   #isCrudEnd
   public function listar(){
   }
   
-  public function tabela($pg = 0 /*fields*/){
+  public function tabela($pg = 0, $order = '' /*fields*/){
     
-    parent::$layout = '';
+    $this->setLayout('');
     
     $where = "1 = 1";
     /*whereTests*/
     
     $conditions = array('conditions' => array($where));    
-    $this->output->addValue('list', #Name::paginate($pg, ConstantesConfig::NUM_PAG, $conditions));
+    $this->output->addValue('list', #NaMe::simplePaginate($pg, ConstantesConfig::NUM_PAG, $conditions, $order));
     
   }
   
   public function detalhes($id) {
-    $this->output->addValue('model', #Name::find($id));
+    $this->output->addValue('model', #NaMe::find($id));
   }
   
   

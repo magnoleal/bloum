@@ -13,12 +13,13 @@ function smarty_function_css_file($params, $smarty)
       $file .= ".css";
     
     $path = $out ? 'app/assets/'.$file : \Bloum\Config::DIR_CSS.$file;
+    $path = HOST_PATH.$path;
     $params_s = "";
     
     unset ($params['file']);
     
     foreach ($params as $key => $value)
-      $params_s = $key.' = '.'"'.$value.'" ';   
+      $params_s = $key.'='.'"'.$value.'" ';   
     
     return '<link href="'.$path.'" rel="stylesheet" type="text/css" '.$params_s.' />';
   }

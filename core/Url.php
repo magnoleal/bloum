@@ -21,6 +21,12 @@ class Url {
   private $url;
 
   /**
+   * Modulo Atual
+   * @var namespace
+   **/
+  private $namespace;
+  
+  /**
    * Controller Atual
    * @var controller
    **/
@@ -31,6 +37,11 @@ class Url {
    * @var action
    **/
   private $action;
+  /**
+   * Host Atual
+   * @var host
+   **/
+  private $host;
 
   /**
    * Instancia da classe (Singleton Opcional)
@@ -40,23 +51,15 @@ class Url {
  
   function __construct($url = null) {
 
-    $this->url = isset($url) ? $url : $_SERVER['PHP_SELF'];
-
-    $this->url = substr($this->url, stripos($this->url, Config::ROOT_SCRIPT) + strlen(Config::ROOT_SCRIPT));      
+    $this->host = substr($_SERVER['PHP_SELF'], 0, stripos($_SERVER['PHP_SELF'], Config::ROOT_SCRIPT));    
+    $this->url = substr($_SERVER['REQUEST_URI'], stripos($_SERVER['REQUEST_URI'], $this->host)+strlen($this->host));
     
-    $paramGet = explode($this->url, $_SERVER ['REQUEST_URI']);
-    if (count($paramGet) > 1)
-        $paramGet = $paramGet[1];
-    else
-        $paramGet = '';
-
-    $this->url .= $paramGet;
+    define('HOST_PATH', $this->host);
     
-    if(strlen($this->url) <= 0)
-      $this->url = "index.index";
-    elseif($this->url[0] == '/')
-      $this->url = substr($this->url, 1);
-
+    $a_url = explode("?", $this->url);
+    if(strlen($a_url[0]) <= 0)   
+      $this->url = "home";    
+    
     $this->explode();
   }
 
@@ -67,19 +70,42 @@ class Url {
     return Url::$instance;
   }
 
+  public function getNamespace(){
+    return $this->namespace;
+  }
 
+  public function getNamespaceDir(){
+
+    if(strlen($this->namespace) > 0)
+      return strtolower(str_replace(".", "/", $this->namespace)."/");
+    return '';
+
+  }
+  
   public function getController() {
     return $this->controller;
+  }
+
+  public function getControllerNameClass() {
+    return ucfirst(Config::URL_UNDESCORE ? Util::camelize($this->controller) : $this->controller);
   }
 
   public function getAction() {
     return $this->action;
   }
-
+  
+  public function setAction($action) {
+    $this->action = $action;
+  }
+ 
   public function getUrl() {
     return $this->url;
   }
-
+  
+  public function getHost() {
+    return $this->host;
+  }
+  
   /**
    * Funcao que quebra a url populando os atributos da classe
    *
@@ -103,24 +129,33 @@ class Url {
 
     }
 
-    $arrayUrl = explode(Config::SEP_URL, $link);
-
-    if(count($arrayUrl) > 2)
+    $arrayUrl = explode("?", $link);
+    $numParts = count($arrayUrl);
+    
+    if($numParts > 0)
+      $arrayUrl = $arrayUrl[0];
+    
+    $arrayUrl = explode(Config::SEP_URL, $arrayUrl);
+    $numParts = count($arrayUrl);
+    
+    if($numParts < 1)
       throw new BadUrlException("Bad Format Url!");
       
-    $this->controller = $arrayUrl[0];
-    
-    if(count($arrayUrl) == 1 || strlen($arrayUrl[1]) < 1){
 
-      $this->action = 'index';
+    if($numParts >= 2 && strlen($arrayUrl[$numParts - 1]) > 0){
 
-    }else{
+      //action eh a ultima parte da url
+      //$parmParts = explode("?", $arrayUrl[$numParts - 1]);
+      $this->action = $arrayUrl[$numParts - 1];
       
-      //Quebrando caso existam parametros
-      $arrayUrl = explode("?", $arrayUrl[1]);
-      $this->action = $arrayUrl[0];
-
+    }else{
+      $this->action = 'index';
+      $this->url .= $this->url[strlen($this->url)-1] == Config::SEP_URL ? 'index' : Config::SEP_URL.'index';
+      $arrayUrl[] = $this->action;      
     }
+
+    $this->controller = $arrayUrl[$numParts - 2]; //controller eh a penultima parte da url
+    $this->namespace = implode(Config::SEP_URL, array_slice($arrayUrl, 0, $numParts - 2)); //namespace eh o resto
 
   }
 

@@ -119,11 +119,11 @@ class Column
 			case self::STRING:	return (string)$value;
 			case self::INTEGER:	return (int)$value;
 			case self::DECIMAL:	return (double)$value;
+			case self::DATE: return $connection->string_to_date($value);
 			case self::DATETIME:
-			case self::DATE:
 				if (!$value)
 					return null;
-
+                #return $value;
 				if ($value instanceof DateTime)
 					return $value;
 

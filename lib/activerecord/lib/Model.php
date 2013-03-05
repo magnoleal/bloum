@@ -250,7 +250,7 @@ class Model
 	public function __construct(array $attributes=array(), $guard_attributes=true, $instantiating_via_find=false, $new_record=true)
 	{
         $this->__new_record = $new_record;
-      
+        
         if(isset ($attributes['id']) && intval($attributes['id']) > 0)
           $this->__new_record = false;
 
@@ -271,6 +271,10 @@ class Model
 		$this->invoke_callback('after_construct',false);
 	}
 
+    public function setNewRecord($new_record){
+      $this->__new_record = $new_record;
+    }
+    
 	/**
 	 * Magic method which delegates to read_attribute(). This handles firing off getter methods,
 	 * as they are not checked/invoked inside of read_attribute(). This circumvents the problem with
@@ -450,8 +454,11 @@ class Model
 			}
 		}
 
+    if ($value instanceof Date)
+			$value = new Date($value->format('Y-m-d'));
+        
 		// convert php's \DateTime to ours
-		if ($value instanceof \DateTime)
+		else if ($value instanceof \DateTime)
 			$value = new DateTime($value->format('Y-m-d H:i:s T'));
 
 		// make sure DateTime values know what model they belong to so
@@ -1173,6 +1180,11 @@ class Model
 			if (array_key_exists($name,$table->columns))
 			{
 				$value = $table->columns[$name]->cast($value,$connection);
+
+				#magno
+				if (!$this->__new_record && is_string($value))
+					$value = stripslashes($value);
+
 				$name = $table->columns[$name]->inflected_name;
 			}
 
@@ -1526,7 +1538,7 @@ class Model
 		$class = get_called_class();
 
 		if (func_num_args() <= 0)
-			throw new RecordNotFound("Couldn't find $class without an ID");
+			throw new RecordNotFound("Não foi possível encontrar $class sem um código");
 
 		$args = func_get_args();
 		$options = static::extract_and_validate_options($args);
@@ -1596,11 +1608,11 @@ class Model
 				if (!is_array($values))
 					$values = array($values);
 
-				throw new RecordNotFound("Couldn't find $class with ID=" . join(',',$values));
+				throw new RecordNotFound("Não foi possível encontrar $class com código " . join(',',$values));
 			}
 
 			$values = join(',',$values);
-			throw new RecordNotFound("Couldn't find all $class with IDs ($values) (found $results, but was looking for $expected)");
+			throw new RecordNotFound("Não foi possível encontrar todos $class com códigos ($values) ($results resultados encontrados, mas era esperado $expected)");
 		}
 		return $expected == 1 ? $list[0] : $list;
 	}

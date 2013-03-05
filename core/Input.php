@@ -53,21 +53,34 @@ class Input
   {
     $keys = array_keys($array);
 
-    for ($i = 0; $i < count($keys); $i++)
-      $this->params[addslashes(trim($keys[$i]))] = addslashes(trim($array[$keys[$i]]));
+    for ($i = 0; $i < count($keys); $i++){
+      if(!is_array($array[$keys[$i]]))
+        $this->params[addslashes(trim($keys[$i]))] = addslashes(trim($array[$keys[$i]]));      
+      else
+        $this->params[addslashes(trim($keys[$i]))] = $array[$keys[$i]];
+    }
   }  
 
   /**
-   * Pega um Valor (objeto ou nao) da Sessão
+   * Pega um Valor (objeto ou nao) do Input
    * @param $key String - identificação do valor
    * @return Mixed Valor da Sesssao
    */
   public function getValue($key){
     return isset ($this->params[$key]) ? $this->params[$key] : null;
   }
+  
+  /**
+   * Seta um Valor (objeto ou nao) do Input
+   * @param $key String - identificação do valor
+   * @return Mixed Valor da Sesssao
+   */
+  public function setValue($key, $value){
+    $this->params[$key] = $value;
+  }
 
   /**
-   * Pega um Valor (objeto ou nao) da Sessão
+   * Pega um Valor (objeto ou nao) do Input
    * @param $key String - identificação do valor
    * @return Mixed Valor da Sesssao
    */
@@ -83,7 +96,9 @@ class Input
    */
   public function getObject($className){
     $reflec = new \ReflectionClass($className);
-    return $reflec->newInstance($this->params);
+    $inst = $reflec->newInstance();
+    $inst->populate($this->params);
+    return $inst;
   }
 
 }

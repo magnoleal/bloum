@@ -630,26 +630,26 @@ class Errors implements IteratorAggregate
 	private $errors;
 
 	public static $DEFAULT_ERROR_MESSAGES = array(
-		'inclusion'    => "is not included in the list",
-		'exclusion'    => "is reserved",
-		'invalid'      => "is invalid",
-		'confirmation' => "doesn't match confirmation",
-		'accepted'     => "must be accepted",
-		'empty'        => "can't be empty",
-		'blank'        => "can't be blank",
-		'too_long'     => "is too long (maximum is %d characters)",
-		'too_short'    => "is too short (minimum is %d characters)",
-		'wrong_length' => "is the wrong length (should be %d characters)",
-		'taken'        => "has already been taken",
-		'not_a_number' => "is not a number",
-		'greater_than' => "must be greater than %d",
-		'equal_to'     => "must be equal to %d",
-		'less_than'    => "must be less than %d",
-		'odd'          => "must be odd",
-		'even'         => "must be even",
-		'unique'       => "must be unique",
-		'less_than_or_equal_to' => "must be less than or equal to %d",
-		'greater_than_or_equal_to' => "must be greater than or equal to %d"
+		'inclusion'    => "nao esta incluido na lista",
+        'exclusion'    => "é reservado",
+        'invalid'      => "invalido",
+        'confirmation' => "nao bate com a confirmacao",
+        'accepted'     => "deve ser aceito(a)",
+        'empty'        => "nao pode ficar vazio",
+        'blank'        => "nao pode ficar em branco",
+        'too_long'     => "e muito longo (maximo de %d caracteres)",
+        'too_short'    => "e muito curto (minimo de %d caracteres)",
+        'wrong_length' => "esta errado (deve ser %d caracteres)",
+        'taken'        => "has already been taken",
+        'not_a_number' => "nao e um valor numerico",
+        'greater_than' => "deve ser maior que %d",
+        'equal_to'     => "deve ser igual a %d",
+        'less_than'    => "deve ser menor que %d",
+        'odd'          => "deve ser impar",
+        'even'         => "deve ser par",
+        'unique'       => "deve ser unico",
+        'less_than_or_equal_to' => "deve ser menor ou igual a %d",
+        'greater_than_or_equal_to' => "deve ser maior ou igual a to %d"
 	);
 
 	/**
@@ -688,6 +688,11 @@ class Errors implements IteratorAggregate
 		else
 			$this->errors[$attribute][] = $msg;
 	}
+    
+    public function remove($attribute){
+      if(isset($this->errors[$attribute]))
+        unset($this->errors[$attribute]);
+    }
 
 	/**
 	 * Adds an error message only if the attribute value is {@link http://www.php.net/empty empty}.

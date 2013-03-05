@@ -13,20 +13,19 @@ class Form extends Base {
   
   private $isCRUD;
   
-  function __construct($model, $isCRUD = true) {
+  function __construct($model, $namespace = '', $isCRUD = true) {
     $this->isCRUD = $isCRUD;
-    parent::__construct($model);
+    parent::__construct($model, $namespace);
   }
 
   public function generate() {
-    
-    
     
     if ($this->isCRUD) {
       $this->genForm();
       $this->genCadastro();
     }
     $this->genCombo();
+    
   }
   
   private function genCadastro(){
@@ -34,6 +33,7 @@ class Form extends Base {
     $tpl = "cadastro.tpl";
     $this->content = file_get_contents(DIR_TEMPLATES.$tpl);
     $this->replaceName();
+    $this->replaceSep();
     $this->saveView($tpl);
     
   }
@@ -43,7 +43,8 @@ class Form extends Base {
     $tpl = "combo.tpl";
     $this->content = file_get_contents(DIR_TEMPLATES.$tpl);
     $this->replaceName();
-    $this->content = str_replace("#under_name_id", $this->underscore($this->nameModel), $this->content);
+    $this->replaceSep();
+    $this->content = str_replace("#under_name_id", ucfirst($this->camelize($this->nameModel)), $this->content);
     $this->saveView($tpl);
     
   }
@@ -97,7 +98,7 @@ class Form extends Base {
       return '{form_input name="'.$field.'" required='.$req.'}';
     
     $relation = substr($field, 0, $pos);
-    return '{include file="'.$this->camelize($relation).'/combo.tpl" required='.$req.'}';
+    return '{include file="admin/'.$relation.'/combo.tpl" required='.$req.'}';
     
   }
   

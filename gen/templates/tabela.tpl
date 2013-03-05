@@ -1,6 +1,7 @@
-<table class="mws-table">
+<table class="table table-striped" cellspacing="0" id="tb-#name">
   <thead>
     <tr>
+      <th id="check"><input type="checkbox" onclick="selectAll('tb-#name');"></th>
       #fieldsHead
       <th>Ações</th>
     </tr>
@@ -9,11 +10,12 @@
 
     {foreach $list as $model}
       <tr>                        
+        <td class="colCheck"><input type="checkbox" name="id[]" value="{$model->id}"></td>
         #fields
-        <td>
-          {button style="detail" action="#Name.detalhes?id={$model->id}" size="small"}
-          {button style="edit" action="#Name.editar?id={$model->id}" size="small"}
-          {button style="delete" action="#Name.excluir?id={$model->id}" size="small"}
+        <td>          
+          {button style="detail" action="admin#sep#name#sepdetalhes?id={$model->id}" size="mini"}
+          {button style="edit" action="admin#sep#name#sepeditar?id={$model->id}" size="mini"}
+        </td>    
       </tr>
     {foreachelse}  
       <tr><td colspan="#count">Nenhum Dado Encontrado...</td></tr>
@@ -21,6 +23,4 @@
 
   </tbody>
 </table>
-<div class="mws-panel-toolbar bottom clearfix">
-  {paginacao total=$total atual=$pg}
-</div>
+{simple_paginate total=$total atual=$pg ini=$row_ini fim=$row_fim count=$row_count}

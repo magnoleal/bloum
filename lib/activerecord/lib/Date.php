@@ -33,33 +33,21 @@ namespace ActiveRecord;
  * @package ActiveRecord
  * @see http://php.net/manual/en/class.datetime.php
  */
-class DateTime extends \DateTime
+class Date extends \DateTime
 {
 	/**
 	 * Default format used for format() and __toString()
 	 */
-	public static $DEFAULT_FORMAT = 'rfc2822';
+	public static $DEFAULT_FORMAT = 'string';
 
 	/**
 	 * Pre-defined format strings.
 	 */
 	public static $FORMATS = array(
-		'db'      => 'Y-m-d H:i:s',
-		'number'  => 'YmdHis',
-		'time'    => 'H:i',
-		'short'   => 'd M H:i',
-		'long'    => 'F d, Y H:i',
-		'atom'    => \DateTime::ATOM,
-		'cookie'  => \DateTime::COOKIE,
-		'iso8601' => \DateTime::ISO8601,
-		'rfc822'  => \DateTime::RFC822,
-		'rfc850'  => \DateTime::RFC850,
-		'rfc1036' => \DateTime::RFC1036,
-		'rfc1123' => \DateTime::RFC1123,
-		'rfc2822' => \DateTime::RFC2822,
-		'rfc3339' => \DateTime::RFC3339,
-		'rss'     => \DateTime::RSS,
-		'w3c'     => \DateTime::W3C);
+		'db'      => 'Y-m-d',
+		'number'  => 'Ymd',		
+    'string'  => 'd/m/Y'
+		);
 
 	private $model;
 	private $attribute_name;
@@ -108,7 +96,6 @@ class DateTime extends \DateTime
 		// format is a friendly
 		if (array_key_exists($format, self::$FORMATS))
 			 return self::$FORMATS[$format];
-
 		// raw format
 		return $format;
 	}
@@ -136,31 +123,30 @@ class DateTime extends \DateTime
 		call_user_func_array(array($this,'parent::setISODate'),func_get_args());
 	}
 
-	public function setTime($hour, $minute, $second=null)
-	{
-		$this->flag_dirty();
-		call_user_func_array(array($this,'parent::setTime'),func_get_args());
-	}
+	public function diff($compare, $returnDays = true){
+    $difference = $compare->getTimestamp() - $this->getTimestamp();					
+    
+    $negative = false;
+    if($difference < 0){
+    	$negative = true;
+    	$difference = $difference * -1;
+    }
 
-	public function setTimestamp($unixtimestamp)
-	{
-		$this->flag_dirty();
-		call_user_func_array(array($this,'parent::setTimestamp'),func_get_args());
-	}
+    if($returnDays)
+    	return round($difference/86400);
 
-	public function ago(){		
-		$difference = time() - $this->getTimestamp();					
-		return $this->format_interval($difference, 1) . " atrás";		
+    $diff = $this->format_interval($difference, 1);
+    if($negative && $diff != 0)
+    	$diff = '-'.$diff;
+
+		return $diff;
 	}
 
 	public function format_interval($timestamp, $granularity = 2) {		
 	  $units = array(
 	    '1 ano|@count anos' => 31536000,
 	    '1 semana|@count semanas' => 604800,
-	    '1 dia|@count dias' => 86400,
-	    '1 hora|@count horas' => 3600,
-	    '1 minuto|@count minutos' => 60,
-	    '1 segundo|@count segundos' => 1,
+	    '1 dia|@count dias' => 86400
 	  );
 	  $output = '';
 	  foreach ($units as $key => $value) {
@@ -179,7 +165,7 @@ class DateTime extends \DateTime
 	      break;
 	    }
 	  }
-	  return $output ? $output : '0 segundos';
+	  return $output ? $output : '0 dia';
 	}
 
 }

@@ -14,7 +14,6 @@ require DIR_BLOUM.'lib/smarty/Smarty.class.php';
 class Output extends \Smarty
 {
   private static $instance = null; 
-  private $view;
 
   function __construct() {
     parent::__construct();
@@ -47,6 +46,8 @@ class Output extends \Smarty
     if(is_dir(DIR_APP."tags/")) //custom plugins da app
       $this->addPluginsDir(DIR_APP."tags/");
 
+    #$this->debugging = true;
+    
   }
 
   /**
@@ -90,7 +91,13 @@ class Output extends \Smarty
    * @param $tpl String - Pagina (template) a ser aberta
    */
   public function show($tpl){
-    $this->display($tpl);
+
+    try {
+      $this->display($tpl);
+    } catch (Exception $exc) {
+      throw new $exc;
+    }
+    
   }
 
   /**

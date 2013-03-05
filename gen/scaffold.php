@@ -10,24 +10,29 @@ require 'Details.php';
 require 'Form.php';
 
 $crud = true;
+$namespace = '';
 
 if(isset($argc) && count($argc) > 0){
   if( isset($argc['crud']) )
     $crud = intval($argc['crud']) == 1;
   if( isset($argc['model']) )
     $model = $argc['model'];
+  if( isset($argc['namespace']) )
+    $namespace = $argc['namespace'];
 }
 elseif(isset($_GET) && count($_GET) > 0){
   if( isset($_GET['crud']) )
     $crud = intval($_GET['crud']) == 1;
   if( isset($_GET['model']) )
     $model = $_GET['model'];
+  if( isset($_GET['namespace']) )
+    $namespace = $_GET['namespace'];
 }
 
 if(strlen($model) <= 0)
   die('Model Not Found!');
 
-new \Gen\Table($model, $crud);
-new \Gen\Details($model);
-new \Gen\Form($model, $crud);
-new \Gen\Controller($model, $crud);
+new \Gen\Table($model, $namespace, $crud);
+new \Gen\Details($model, $namespace);
+new \Gen\Form($model, $namespace, $crud);
+new \Gen\Controller($model, $namespace, $crud);

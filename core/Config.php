@@ -11,10 +11,18 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
  * @version 1.0 - 08 de Maio de 2012
  */
 class Config{  
+    
+    /**
+    * Constante para identificar um prefixo para os valores <br/>
+    * (evitar conflito com outros sites/sistemas no msm host)
+    * @var KEY
+    **/ 
+    const KEY = "time_cms";  
+    
     /**
     * Constante que define a separacao na url, Ex.: controller.action    
     **/  
-    const SEP_URL = '.';
+    const SEP_URL = '/';
 
     /**
     * Constante que define a separacao na url dos parametros, Ex.: controller.action?param1=43    
@@ -59,10 +67,21 @@ class Config{
     /**
     * Constante que define a localizacao dos arquivos de imagens
     **/  
-    const DIR_IMAGES = 'app/assets/images/';
+    const DIR_IMAGES = 'app/assets/img/';
     
     /**
     * Ativar Minify
     **/  
     const MINIFY_ENABLE = true;
+    
+    /**
+    * Slug Action
+    **/  
+    const SLUG_ACTION = 'slug';
+
+    /**
+    * Define se a url vem no padrao underscore (ex:categoria_blog)
+    **/  
+    const URL_UNDESCORE = true;
+    
 }

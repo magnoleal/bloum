@@ -12,13 +12,6 @@ if (!defined('DIR_BLOUM')) exit('No direct script access allowed');
 class Session {
 
   /**
-   * Constante para identificar um prefixo para os valores <br/>
-   * (evitar conflito com outros sites/sistemas no msm host)
-   * @var KEY
-   **/ 
-  const KEY = "bloum";
-
-  /**
    * Constante para identificar usuario na sessao
    * @var USER
    **/ 
@@ -64,7 +57,7 @@ class Session {
    */
   function setValue($key, $value)
   {
-    $_SESSION[Session::KEY . '_' . $key] = $value;
+    $_SESSION[Config::KEY . '_' . $key] = $value;
   }
 
   /**
@@ -73,7 +66,7 @@ class Session {
    * @return Mixed Valor da Sesssao
    */
   public function getValue($key){
-    return isset ($_SESSION[Session::KEY . '_' . $key]) ? $_SESSION[Session::KEY . '_' . $key] : null;
+    return isset ($_SESSION[Config::KEY . '_' . $key]) ? $_SESSION[Config::KEY . '_' . $key] : null;
   }
 
   /**
@@ -82,7 +75,7 @@ class Session {
    * @return Mixed Valor da Sesssao
    */
   public function exist($key){
-    return isset ($_SESSION[Session::KEY . '_' . $key]);
+    return isset ($_SESSION[Config::KEY . '_' . $key]);
   }
 
   /**
@@ -91,17 +84,17 @@ class Session {
    */
   public function setUrls($url){
         
-    if(isset ($_SESSION[Session::KEY . '_' . Session::CURRENT_URL]) &&
-        strlen($_SESSION[Session::KEY . '_' . Session::CURRENT_URL]) > 0){
+    if(isset ($_SESSION[Config::KEY . '_' . Session::CURRENT_URL]) &&
+        strlen($_SESSION[Config::KEY . '_' . Session::CURRENT_URL]) > 0){
 
       //Evitando de perder a anterior se ocorrer um Refresh
-      if(strcmp($_SESSION[Session::KEY . '_' . Session::CURRENT_URL], $url) != 0)
-          $_SESSION[Session::KEY . '_' . Session::PREVIOUS_URL] = 
-                  $_SESSION[Session::KEY . '_' . Session::CURRENT_URL];
+      if(strcmp($_SESSION[Config::KEY . '_' . Session::CURRENT_URL], $url) != 0)
+          $_SESSION[Config::KEY . '_' . Session::PREVIOUS_URL] = 
+                  $_SESSION[Config::KEY . '_' . Session::CURRENT_URL];
 
     }
 
-    $_SESSION[Session::KEY . '_' . Session::CURRENT_URL] = $url;
+    $_SESSION[Config::KEY . '_' . Session::CURRENT_URL] = $url;
      
   }
 

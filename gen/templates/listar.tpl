@@ -1,20 +1,17 @@
-{block name=title}Listagem de #Name{/block}
-
-{block name=body}
-
-{ApplicationHelper::datatable()}
-
-<div class="mws-panel-header">
-  <span class="mws-i-24 i-table-1">Listagem de #Name</span>
-</div>
-<div class="mws-panel-body">
-  {include file="#name/busca.tpl"} 
-  <div id="div-table"></div>  
-  <div class="mws-button-row">
-    {button style="back"}
-    #isCrudBegin
-    {button style="new" action="#Name.cadastro"}      
-    #isCrudEnd
+{block name=bjs}
+  {ApplicationHelper::datatable('id','asc')}
+{/block}
+{block name=bcontent}
+<div class="row-fluid">
+  <div class="span8"><h3>Listagem de #Names</h3></div>
+  <div class="span4">
+      {button style="new" action="admin#sep#name#sepcadastro"}
+      {button style="copy" action="admin#sep#name#sepcopiar"}
+      {button style="delete" action="admin#sep#name#sepexcluir"} 
   </div>
 </div>
+{include file="admin/#name/busca.tpl"} 
+<form method="post" action="javascript:void(0);" id="form-table">    
+  <div id="div-table"></div>  
+</form>
 {/block}

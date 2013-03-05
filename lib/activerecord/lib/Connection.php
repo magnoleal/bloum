@@ -7,6 +7,7 @@
 namespace ActiveRecord;
 
 require 'Column.php';
+require 'Date.php';
 
 use PDO;
 use PDOException;
@@ -306,6 +307,7 @@ abstract class Connection
 		$sth->setFetchMode(PDO::FETCH_ASSOC);
 
 		try {
+            #magno-peformance: echo '<span style="color: red;">'.$sql.'</span> | ';
 			if (!$sth->execute($values))
 				throw new DatabaseException($this);
 		} catch (PDOException $e) {
@@ -449,7 +451,7 @@ abstract class Connection
 	 */
 	public function datetime_to_string($datetime)
 	{
-		return $datetime->format('Y-m-d H:i:s T');
+		return $datetime->format('Y-m-d H:i:s');
 	}
 
 	/**
@@ -459,15 +461,42 @@ abstract class Connection
 	 * @return DateTime
 	 */
 	public function string_to_datetime($string)
-	{
+	{   
 		$date = date_create($string);
 		$errors = \DateTime::getLastErrors();
 
 		if ($errors['warning_count'] > 0 || $errors['error_count'] > 0)
 			return null;
-
+        
 		return new DateTime($date->format('Y-m-d H:i:s T'));
 	}
+    
+    public function string_to_date($string)
+	{ 
+        if(empty($string))
+          return null;
+        
+		$date = date_create($this->stringToDate($string));        
+		$errors = \DateTime::getLastErrors();
+        
+		if ($errors['warning_count'] > 0 || $errors['error_count'] > 0)
+			return null;        
+
+		return new Date($date->format('Y-m-d'));
+	}
+    
+    /**
+    * FUNCAO PARA GRAVAR A DATA NO BANCO DE 10/10/2010 PARA 2010-10-10
+    * */
+    private function stringToDate($data) {
+      if(stripos($data, "-") !== FALSE)
+        return $data;
+      if ($data != '') {
+        return (substr($data, 6, 4) . '-' . substr($data, 3, 2) . '-' . substr($data, 0, 2));
+      } else {
+        return '';
+      }
+    }
 
 	/**
 	 * Adds a limit clause to the SQL query.

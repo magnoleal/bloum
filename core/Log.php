@@ -68,6 +68,13 @@ class Log
   /** variaveis acessorias **/
   private $file;
   private $fileHandle;
+  
+  /**
+   * Instancia (singleton) default para a classe de logs
+   * Coloca os arquivos de logs numa pasta de logs/ na raiz do projeto
+   * @var Log 
+   */  
+  private static $defaultInstance = null;
 
   /**
    * Construtor da Classe Log
@@ -292,5 +299,12 @@ class Log
     }
   }
     
+  public static function getDefaultInstance(){
+    
+    if(self::$defaultInstance == null)
+      self::$defaultInstance = new Log("logs/");      
+    return self::$defaultInstance;  
+    
+  }
 
 }

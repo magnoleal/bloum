@@ -16,10 +16,11 @@ abstract class Base {
   
   protected $nameModel;
   protected $model;
+  protected $namespace;
   protected $content;
   protected $path = '';
 
-  function __construct($model) {
+  function __construct($model, $namespace = '') {
 
     if (!file_exists(DIR_APP . 'models/' . $model . ".php"))
       throw new \Exception("Model Class Not Found");
@@ -27,6 +28,8 @@ abstract class Base {
     spl_autoload_register('\Bloum\Main::loader');
     \Bloum\Db::init();
 
+    $this->namespace = $namespace;
+    
     $model = ucfirst($model);
     $this->nameModel = $model;
     $this->model = new $model();
@@ -35,7 +38,14 @@ abstract class Base {
   }
 
   protected function saveView($name){
-    $path = DIR_APP . "views/" . lcfirst($this->nameModel) . "/";
+    
+    $path = DIR_APP . "views/admin/";
+    
+    if (strlen($this->namespace))
+      $path .= $this->namespace . "/";
+    
+    $path .= $this->underscore($this->nameModel) . "/";
+    
     if (!file_exists($path))
       mkdir($path, 0755, true);
     $path .= $name;
@@ -43,7 +53,11 @@ abstract class Base {
   }
   
   protected function saveController(){
-    $path = DIR_APP . "controllers/";
+    $path = DIR_APP . "controllers/admin/";
+    
+    if (strlen($this->namespace))
+      $path .= $this->namespace . "/";
+    
     if (!file_exists($path))
       mkdir($path, 0755, true);
     $path .= ucfirst($this->nameModel) . "Controller.php";
@@ -63,8 +77,14 @@ abstract class Base {
   }
 
   protected function replaceName() {
-    $this->content = str_replace("#name", lcfirst($this->nameModel), $this->content);
-    $this->content = str_replace("#Name", ucfirst($this->nameModel), $this->content);
+    $n = \Bloum\Config::URL_UNDESCORE ? $this->underscore($this->namespace) : $this->namespace;
+    $m = \Bloum\Config::URL_UNDESCORE ? $this->underscore($this->nameModel) : $this->nameModel;
+    $this->content = str_replace("#name", lcfirst($n).lcfirst($m), $this->content);
+    $this->content = str_replace("#Name", ucfirst($n).ucfirst($m), $this->content);
+  }
+  
+  protected function replaceSep() {
+    $this->content = str_replace("#sep", \Bloum\Config::SEP_URL, $this->content);
   }
 
   abstract function generate();
@@ -89,7 +109,8 @@ abstract class Base {
     return lcfirst($name); 
   }
   
-  function underscore($name) {
+  protected function underscore($name) {
+    if(empty($name)) return $name;
     $name[0] = strtolower($name[0]);
     $func = create_function('$c', 'return "_" . strtolower($c[1]);');
     return preg_replace_callback('/([A-Z])/', $func, $name);

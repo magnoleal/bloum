@@ -17,17 +17,18 @@ class Main {
    * Objeto Bloum\Url
    * @var url
    **/
-  private $url;  
+  private $url;    
+  private $keySessionID = "ksi";
  
   function __construct() {
 
+    date_default_timezone_set('America/Sao_Paulo');
     spl_autoload_register(array($this, 'loader'));
 
     if (!defined('DIR_APP')) 
       throw new NotFoundException('Constant DIR_APP Not Found!');
     
     $this->url = Url::getInstance();
-    @session_start();
     
   }
 
@@ -35,9 +36,20 @@ class Main {
    * Seta o id da sessao em casos de requisicao flash
    **/
   private function setSessionFromFlash() {
+    
     if (isset($_REQUEST[$this->keySessionID]) && strlen($_REQUEST[$this->keySessionID]) > 0) {
       session_id($_REQUEST[$this->keySessionID]);
-      #@session_start();
+      @session_start();
+    }
+  }
+  
+  private function setSession(){
+    if (!Util::isRequestFlash()){
+      if(!session_start())
+        throw new Exception('Error on start Session!');      
+    }
+    else{
+      $this->setSessionFromFlash();      
     }
   }
 
@@ -45,35 +57,42 @@ class Main {
    * Metodo principal, executa a chamada dos controllers
    **/
   public function run(){
+    
     $isAjax = false;
 
-    if (Util::isRequestFlash()){
-      $isAjax = true;
-      $this->setSessionFromFlash();
-    }
+    if (Util::isRequestFlash())
+      $isAjax = true;    
+    
+    $this->setSession();
+    
+    $controllerName = $this->url->getControllerNameClass()."Controller";
 
-    $controllerName = ucfirst($this->url->getController())."Controller";
-
-    if ( !file_exists(DIR_APP . "controllers/" .  $controllerName . ".php") )
-      throw new NotFoundException('Controller ' .  $controllerName . ' Not Found!');
+    if ( !file_exists(DIR_APP . "controllers/" .   $this->url->getNamespaceDir().$controllerName . ".php") )
+      throw new NotFoundException('Controller ' .  $this->url->getNamespaceDir().$controllerName . ' Not Found!');
 
     if (!$isAjax)            
       $isAjax = Util::isRequestAjax(); 
     
-    if(!$isAjax){       
-      $session = Session::getInstance();    
-      $session->setUrls($this->url->getUrl());
-    }
 
     try {
+
+      if(file_exists(DIR_APP."controllers/ApplicationController.php"))
+        require_once DIR_APP."controllers/ApplicationController.php";    
+
+      require_once DIR_APP."controllers/".$this->url->getNamespaceDir().$controllerName.".php";
       
-      $controller = new $controllerName();    
+      $controller = new $controllerName();   
+      $controller->setAjax($isAjax);
       $controller->execute($this->url->getAction());
       
     } catch (\Exception $exc) {
       
-      if ($isAjax){        
-        echo json_encode(array('error' => $exc->getMessage()));
+      if ($isAjax){      
+        
+        header('HTTP/1.1 500 Internal Server');
+        header('Content-Type: application/json');
+        
+        die( json_encode(array('message' => $exc->getMessage(), 'code' => 333)) );
       }else{
         var_dump($exc->getMessage());
       }
@@ -102,9 +121,6 @@ class Main {
     elseif(file_exists(DIR_APP."models/$class.php"))
       require_once DIR_APP."models/$class.php";    
     
-    elseif (strpos($class,'Controller'))
-      require_once DIR_APP."controllers/$class.php";
-    
     elseif (strpos($class,'Model'))
       require_once DIR_APP."models/$class.php";
 
@@ -113,6 +129,9 @@ class Main {
     
     elseif (strpos($class,'Config'))
       require_once DIR_APP."config/$class.php";     
+    
+    elseif (strpos($class,'Lib'))
+      require_once DIR_APP."lib/$class.php";     
   }
 
 }

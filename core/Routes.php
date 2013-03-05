@@ -32,9 +32,9 @@ abstract class Routes{
    * @return void
    * @author 
    **/
-  public function add($url, $controller, $action)
+  public function add($url, $namespace, $controller, $action)
   {
-    $this->routes[$url] = $controller.Config::SEP_URL.$action;    
+    $this->routes[$url] = $namespace.Config::SEP_URL.$controller.Config::SEP_URL.$action;
   }
 
   /**

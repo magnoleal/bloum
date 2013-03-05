@@ -15,7 +15,7 @@ class Security {
    * Simbolo para separacao de hashs
    * @var SEP
    **/
-  const SEP = '$!';
+  const SEP = '$#';
 
   /**
    * Metodo que gera uma chave randomica

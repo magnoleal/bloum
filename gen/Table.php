@@ -13,9 +13,9 @@ class Table extends Base {
   
   private $isCRUD;
   
-  function __construct($model, $isCRUD = true) {
+  function __construct($model, $namespace = '', $isCRUD = true) {
     $this->isCRUD = $isCRUD;
-    parent::__construct($model);
+    parent::__construct($model, $namespace);
   }
 
   public function generate() {
@@ -31,6 +31,7 @@ class Table extends Base {
     $tpl = "listar.tpl";
     $this->content = file_get_contents(DIR_TEMPLATES.$tpl);
     $this->replaceName();
+    $this->replaceSep();
     
     if ($this->isCRUD) {
       $this->content = str_replace("#isCrudBegin", "", $this->content);
@@ -61,6 +62,7 @@ class Table extends Base {
     $tpl = $isSearch ? "busca.tpl" : "tabela.tpl";    
     $this->content = file_get_contents(DIR_TEMPLATES.$tpl);
     $this->replaceName();
+    $this->replaceSep();
     $fields = $this->model->attributes();     
     
     
@@ -75,7 +77,7 @@ class Table extends Base {
     
     if(!$isSearch){
       $this->content = str_replace("#fieldsHead", $headFields, $this->content);    
-      $this->content = str_replace("#count", count($fields)+1, $this->content);    
+      $this->content = str_replace("#count", count($fields)+2, $this->content);    
     }
     
     $this->content = str_replace("#fields", $stringFields, $this->content);    
@@ -85,9 +87,10 @@ class Table extends Base {
   private function genFieldHead($field){    
     $pos = strpos($field, "_id");
     
-    if($pos !== FALSE)
-      $field = substr($field, 0, $pos);
+    if($pos === FALSE)
+      return '<th><a id="col-'.$field.'" href="javascript:sortTable(\''.$field.'\')">'.ucfirst($field).'</a></th>';
     
+    $field = substr($field, 0, $pos);
     return '<th>'.ucfirst($field).'</th>';
     
   }
@@ -104,7 +107,7 @@ class Table extends Base {
       return $isSearch ? '{form_input name="'.$field.'" busca=true}' : '<td>{$model->'.$field.'}</td>';
     
     $relation = substr($field, 0, $pos);
-    return $isSearch ? '{include file="'.$this->camelize($relation).'/combo.tpl" busca=true}' : '<td>{$model->'.$relation.'->nome}</td>';
+    return $isSearch ? '{include file="admin/'.$relation.'/combo.tpl" busca=true}' : '<td>{$model->'.$relation.'->nome}</td>';
     
   }
   

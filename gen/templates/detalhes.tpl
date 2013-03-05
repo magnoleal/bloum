@@ -1,19 +1,19 @@
-{block name=title}Detalhes de #Name{/block}
-
-{block name=body}
-<div class="mws-panel-header">
-  <span class="mws-i-24 i-list">Detalhes de #Name</span>
+{block name=bcontent}
+<div class="row-fluid">
+  <div class="span8"><h3>Detalhes da #Name</h3></div>
+  <div class="span4">
+      {button style="new" action="admin#sep#name#sepcadastro"}
+      {button style="edit" action="admin#sep#name#sepeditar?id={$model->id}"}
+      {button style="list" action="admin#sep#name#seplistar"} 
+  </div>
 </div>
-<div class="mws-panel-body">
-  <div class="mws-panel-content">
-    {include file="#name/detalhesInclude.tpl"}
-  </div>
-  <div class="mws-button-row">
-    {button style="back"}
-    {button style="edit" action="#Name.editar?id={$model->id}"}
-    {button style="list" action="#Name.listar"}    
-  </div>
-
-</div>  
-
+<ul class="nav nav-tabs" id="tabs">
+  <li class="active"><a href="#geral" data-toggle="tab">Geral</a></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane active" id="geral">
+    {include file="admin/#name/detalhesInclude.tpl"}
+    #fieldsRelation
+  </div>      
+</div>
 {/block}
